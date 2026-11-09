@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Focus SVT · Calibration Reference & Tune Comparison</title>
+<title>Nic's Focus SVT Turbo · Calibration Comparison (v000 vs. v001)</title>
 <style>
 :root {
   --bg: #0e1724;
@@ -196,26 +196,32 @@ tr.selected td { background: #1c3652; }
 <body>
 
 <header>
-  <h1>Focus SVT · Calibration Reference & Tune Comparison</h1>
-  <p>Authentic Ford Focus SVT (Black Oak UJAHAS3) parameters, exact ECM IDs, and cell-by-cell table comparisons.</p>
-  <p><span class="badge">Returnless ERFS</span><span class="badge">Black Oak UJAHAS3</span><span class="badge">Boost Calibration</span></p>
+  <h1>Nic's Focus SVT Turbo · Calibration Comparison</h1>
+  <p>Authentic Ford Focus SVT (Black Oak UJAHAS3 / ZED0) parameters, exact ECM IDs, and cell-by-cell table differences.</p>
+  <p>
+    <span class="badge">Returnless ERFS (OEM FPDM)</span>
+    <span class="badge">Stock 10.2:1 Bottom End</span>
+    <span class="badge">Black Oak UJAHAS3</span>
+    <span class="badge">Siemens Deka 60lb</span>
+    <span class="badge">Turbo Safe Baseline</span>
+  </p>
   <div class="banner">
-    <strong>💡 Verified SVT Focus Calibration Data:</strong> All parameter IDs, paths, RPM/load axis breakpoints, and table structures shown below are exact Ford EEC-V / Black Oak strategy values from HP Tuners VCM Editor.
+    <strong>💡 Calibration Context (v000 vs. v001):</strong> Nic was supplied with <code>SVTv29.26.hpt</code>, which was configured for a mechanical return system with flat 40 psi rail pressure and disabled manifold vacuum compensation. Candidate <code>v001</code> restores genuine Ford returnless ERFS closed-loop pump authority, fixes the 64°F cranking cliff, clears 2,500 RPM lean pockets, raises idle to 950 RPM for flywheel rattle, applies the v037 VCT reversion lockout under boost, and preserves conservative 11.0° spark timing for stock 10.2:1 compression safety.
   </div>
 </header>
 
 <main>
   <section class="panel">
     <div class="controls">
-      <label>Compare From (Parent)
+      <label>Compare From (Parent Baseline)
         <select id="from">
-          <option value="v000">v000 · Factory SVT Baseline (30lb NA)</option>
+          <option value="v000">v000 · Inherited Return Tune (SVTv29.26.hpt)</option>
         </select>
       </label>
       <button class="btn" id="swap">⇄ Swap</button>
       <label>Compare To (Candidate)
         <select id="to">
-          <option value="v001">v001 · Returnless Boost Baseline (60lb)</option>
+          <option value="v001">v001 · Safe Returnless Boost Baseline (v001-returnless-boost-baseline.hpt)</option>
         </select>
       </label>
       <label>Search Parameters
@@ -255,45 +261,71 @@ tr.selected td { background: #1c3652; }
 <script id="data" type="application/json">
 {
   "revisions": [
-    { "version": "v000", "summary": "Stock Ford Focus SVT 2004 read (OEM 30lb injectors, 850 RPM warm idle, factory NA spark and VCT)" },
-    { "version": "v001", "summary": "Returnless boost baseline: Siemens 60lb slopes, 950 RPM idle, boost-retarded Borderline Knock timing, and spool VCT advance" }
+    { "version": "v000", "name": "Inherited Return Tune (SVTv29.26)", "summary": "Unmodified tune file provided to Nic; configured for return-style fuel system with flat 40 psi rail pressure, zero vacuum multiplier, 64°F cranking cliff, and NA VCT overlap." },
+    { "version": "v001", "name": "Returnless Boost Baseline", "summary": "Safe returnless boost baseline: Restored Ford ERFS 0-70 psi sensor transfer, ECM 6950 = 0.484, 950 RPM idle, smoothed 64°F cranking cliff, v037 VCT reversion lockout, and safe 10.2:1 spark." }
   ],
   "parameters": [
     {
-      "id": "12011",
-      "name": "Injector Flow Rate High",
-      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate High",
-      "description": "[ECM] 12011 - Injector Flow Rate High: Injector Flow Rate for high commanded fuel mass values (linear flow slope).",
-      "kind": "scalar",
-      "unit": "lb/s",
-      "v000": "0.008333333 (~30.0 lb/hr)",
-      "v001": "0.016700000 (~60.12 lb/hr)"
+      "id": "7596",
+      "name": "Fuel Pressure Sensor Transfer Function",
+      "path": "Fuel System / General / Fuel Pressure Sensor / Fuel Pressure Sensor Transfer Function",
+      "description": "[ECM 7596] Primary Fuel Rail Pressure Sensor (FRPS) transfer curve. The inherited return tune flattened all 7 cells to 40.0 psi, blinding the PCM to fuel pressure drops. Candidate v001 restores the genuine Ford 0-70 psi transfer function so the closed-loop pump PID can actively regulate rail pressure under boost.",
+      "kind": "table",
+      "axis_label": "A/D Counts (Volts) \\ Parameter",
+      "cols": ["Fuel Pressure (psi)"],
+      "rows": [
+        "0 Counts (0.00 V)",
+        "102 Counts (0.50 V)",
+        "307 Counts (1.50 V)",
+        "512 Counts (2.50 V)",
+        "716 Counts (3.50 V)",
+        "921 Counts (4.50 V)",
+        "1023 Counts (5.00 V)"
+      ],
+      "v000_matrix": [
+        ["40.00"],
+        ["40.00"],
+        ["40.00"],
+        ["40.00"],
+        ["40.00"],
+        ["40.00"],
+        ["40.00"]
+      ],
+      "v001_matrix": [
+        ["0.00"],
+        ["0.00"],
+        ["17.50"],
+        ["35.00"],
+        ["52.50"],
+        ["70.00"],
+        ["78.70"]
+      ]
     },
     {
-      "id": "12010",
-      "name": "Injector Flow Rate Low",
-      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate Low",
-      "description": "[ECM] 12010 - Injector Flow Rate Low: Injector Flow Rate for low commanded fuel mass values (short pulse width non-linear slope).",
+      "id": "6950",
+      "name": "Manifold Vacuum Multiplier",
+      "path": "Engine / Airflow / General / General / Manifold Vacuum Multiplier",
+      "description": "[ECM 6950] Scales manifold inHg to PSI for injector Delta-P modeling: Delta-P = P_rail - (P_vac * 0.484). Tuner set this to 0.000 for a mechanical return system; restored to factory 0.484 for returnless ERFS.",
       "kind": "scalar",
-      "unit": "lb/s",
-      "v000": "0.008888889 (~32.0 lb/hr)",
-      "v001": "0.017500000 (~63.00 lb/hr)"
+      "unit": "multiplier",
+      "v000": "0.000",
+      "v001": "0.484"
     },
     {
-      "id": "12012",
-      "name": "Injector Breakpoint",
-      "path": "Engine / Fuel / General / Injector Control / Injector Breakpoint",
-      "description": "[ECM] 12012 - Injector Breakpoint: The commanded fuel mass at which the injector flow rate switches between Low and High values.",
+      "id": "43000",
+      "name": "Desired Fuel Pressure Over Injector",
+      "path": "Fuel System / Fuel Pump / Desired Pressure / Desired Fuel Pressure Over Injector",
+      "description": "[ECM 43000] Closed-loop target differential pressure across injector tips across all operating rows.",
       "kind": "scalar",
-      "unit": "lb",
-      "v000": "0.00001850",
-      "v001": "0.00003360"
+      "unit": "psi",
+      "v000": "40.00",
+      "v001": "39.15"
     },
     {
       "id": "44218",
       "name": "Target Idle Speed Park/Neutral",
       "path": "Engine / Idle / RPM / Transmission Based Setpoint / Target Idle Speed Park/Neutral",
-      "description": "[ECM] 44218 - Target Idle Speed Park/Neutral: The target idle speed for an automatic or manual transmission with driveline disengaged.",
+      "description": "[ECM 44218] Disengaged idle target. Raised from 850 RPM to 950 RPM to eliminate gear rollover rattle and clutch chatter caused by Nic's aftermarket lightweight single-mass flywheel.",
       "kind": "scalar",
       "unit": "RPM",
       "v000": "850.0",
@@ -303,44 +335,223 @@ tr.selected td { background: #1c3652; }
       "id": "44217",
       "name": "Target Idle Speed Drive",
       "path": "Engine / Idle / RPM / Transmission Based Setpoint / Target Idle Speed Drive",
-      "description": "[ECM] 44217 - Target Idle Speed Drive: The target idle speed for an automatic or manual transmission with driveline engaged.",
+      "description": "[ECM 44217] Engaged idle target. Raised from 850 RPM to 950 RPM to provide sufficient torque reserve when air conditioning and electric cooling fans engage.",
       "kind": "scalar",
       "unit": "RPM",
       "v000": "850.0",
       "v001": "950.0"
     },
     {
-      "id": "6950",
-      "name": "Manifold Vacuum Multiplier",
-      "path": "Engine / Airflow / General / General / Manifold Vacuum Multiplier",
-      "description": "[ECM] 6950 - Manifold Vacuum Multiplier: Used to scale inHg to PSI for injector Delta-P modeling. CRITICAL: Preserved at 0.484 for returnless ERFS.",
+      "id": "44519",
+      "name": "Fuel Cranking vs. ECT",
+      "path": "Engine / Fuel / General / Cranking Fuel / Fuel Cranking vs. ECT",
+      "description": "[ECM 44519] Commanded cranking lambda vs. Engine Coolant Temperature. The inherited tune contains a severe cliff at 64°F (0.930 jumping to 0.335 Lambda across 0.01°F), dumping 2.8x extra fuel on room-temperature starts and soaking the spark plugs. Candidate v001 restores a smooth, monotonic temperature taper.",
+      "kind": "table",
+      "axis_label": "Engine Coolant Temp (°F) \\ Parameter",
+      "cols": ["Commanded Cranking Lambda"],
+      "rows": [
+        "-20.00°F",
+        "0.00°F",
+        "20.00°F",
+        "30.00°F",
+        "40.00°F",
+        "63.99°F",
+        "64.00°F (Cliff)",
+        "90.00°F",
+        "120.00°F",
+        "150.00°F",
+        "180.00°F",
+        "220.00°F"
+      ],
+      "v000_matrix": [
+        ["0.850"],
+        ["0.857"],
+        ["0.870"],
+        ["0.877"],
+        ["0.886"],
+        ["0.930"],
+        ["0.335"],
+        ["0.430"],
+        ["0.647"],
+        ["0.764"],
+        ["1.000"],
+        ["1.000"]
+      ],
+      "v001_matrix": [
+        ["0.850"],
+        ["0.857"],
+        ["0.870"],
+        ["0.877"],
+        ["0.886"],
+        ["0.930"],
+        ["0.850"],
+        ["0.750"],
+        ["0.700"],
+        ["0.764"],
+        ["1.000"],
+        ["1.000"]
+      ]
+    },
+    {
+      "id": "44511",
+      "name": "Fuel Base vs. RPM vs. TPS",
+      "path": "Engine / Fuel / Open Loop / Base / Base Fuel / Fuel Base vs. RPM vs. TPS",
+      "description": "[ECM 44511] Primary open loop base fuel map. Fixes light-throttle acceleration lean pockets at 2,500 RPM (1.07 and 1.14 Lambda) and sets rich WOT targets (0.76-0.77 Lambda ~11.3 AFR) to provide essential in-cylinder cooling for factory 10.2:1 compression under boost.",
+      "kind": "table",
+      "axis_label": "Throttle Position (TPS %) \\ Engine RPM",
+      "cols": ["1,000", "2,500", "3,500", "4,000", "4,500", "5,000", "5,500", "6,000", "6,500", "7,400"],
+      "rows": [
+        "Row 1 (15.6% TPS)",
+        "Row 2 (19.5% TPS)",
+        "Row 3 (23.4% TPS)",
+        "Row 4 (31.2% TPS)",
+        "Row 5 (35.2% TPS)",
+        "Row 6 (39.1% Boost)",
+        "Row 7 (53.7% WOT)"
+      ],
+      "v000_matrix": [
+        ["1.00", "1.07", "1.02", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00"],
+        ["1.00", "1.14", "1.02", "0.85", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00"],
+        ["1.00", "1.00", "1.03", "0.85", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00"],
+        ["1.00", "0.80", "0.80", "0.73", "0.75", "0.75", "0.75", "0.75", "0.75", "0.75"],
+        ["0.80", "0.80", "0.80", "0.73", "0.75", "0.75", "0.75", "0.75", "0.75", "0.75"],
+        ["0.80", "0.73", "0.73", "0.73", "0.73", "0.74", "0.74", "0.74", "0.74", "0.74"],
+        ["0.80", "0.75", "0.75", "0.74", "0.73", "0.74", "0.74", "0.74", "0.75", "0.74"]
+      ],
+      "v001_matrix": [
+        ["1.00", "1.00", "1.02", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00"],
+        ["1.00", "1.00", "1.02", "0.85", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00"],
+        ["1.00", "1.00", "1.03", "0.85", "1.00", "1.00", "1.00", "1.00", "1.00", "1.00"],
+        ["1.00", "0.80", "0.80", "0.73", "0.75", "0.75", "0.75", "0.75", "0.75", "0.75"],
+        ["0.80", "0.80", "0.80", "0.73", "0.75", "0.75", "0.75", "0.75", "0.75", "0.75"],
+        ["0.80", "0.73", "0.73", "0.73", "0.73", "0.74", "0.74", "0.74", "0.74", "0.74"],
+        ["0.80", "0.75", "0.75", "0.76", "0.76", "0.77", "0.77", "0.77", "0.77", "0.77"]
+      ]
+    },
+    {
+      "id": "44412",
+      "name": "VCT Angle vs. RPM vs. Load",
+      "path": "Engine / Airflow / Variable Camshaft / Configuration / VCT Angle vs. RPM vs. Load",
+      "description": "[ECM 44412] Variable Cam Timing intake phase advance (9 rows x 11 cols). The inherited tune had factory NA advance (-49.5° overlap) blowing 1,500°F pre-turbine backpressure backwards into the intake runners. Candidate v001 applies the v037 strategy: 0.00° lockout across 4,500-7,200 RPM and in boost rows above 3,500 RPM, while preserving mid-range spool advance (-15° to -30°).",
+      "kind": "table",
+      "axis_label": "Engine Load \\ Engine RPM",
+      "cols": ["1,000", "1,500", "2,000", "2,500", "3,500", "4,500", "6,000", "6,250", "6,750", "7,000", "7,200"],
+      "rows": [
+        "Load 0.10",
+        "Load 0.20",
+        "Load 0.30",
+        "Load 0.40",
+        "Load 0.50",
+        "Load 0.60 (Spool)",
+        "Load 0.70 (Boost)",
+        "Load 0.80 (Boost)",
+        "Load 1.00 (Boost)"
+      ],
+      "v000_matrix": [
+        ["0.00", "-10.00", "-15.00", "-20.00", "-15.00", "-15.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-22.00", "-30.00", "-39.60", "-35.00", "-34.00", "0.00", "0.00", "5.00", "0.00", "0.00"],
+        ["-10.00", "-25.00", "-34.80", "-42.00", "-42.00", "-31.60", "-5.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-26.00", "-35.10", "-45.00", "-49.50", "-49.50", "-10.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-28.00", "-33.50", "-45.00", "-49.50", "-49.50", "-15.00", "-5.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-26.50", "-28.50", "-45.00", "-49.50", "-49.50", "-15.00", "-5.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-21.00", "-23.00", "-24.00", "-49.50", "-49.50", "-10.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-17.00", "-19.00", "-19.00", "-49.50", "-49.50", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-12.00", "-13.00", "-13.00", "-13.00", "-12.00", "0.00", "0.00", "0.00", "0.00", "0.00"]
+      ],
+      "v001_matrix": [
+        ["0.00", "-10.00", "-15.00", "-20.00", "-15.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-15.00", "-20.00", "-25.00", "-20.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-20.00", "-25.00", "-30.00", "-25.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-20.00", "-30.00", "-35.00", "-25.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-20.00", "-30.00", "-35.00", "-20.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-15.00", "-25.00", "-30.00", "-20.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-15.00", "-25.00", "-30.00", "-20.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-15.00", "-25.00", "-28.00", "-18.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["-10.00", "-15.00", "-20.00", "-25.00", "-15.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"]
+      ]
+    },
+    {
+      "id": "44583",
+      "name": "Spark Borderline Knock vs. RPM vs. Load",
+      "path": "Engine / Spark / Advance / Borderline / Spark Borderline Knock vs. RPM vs. Load",
+      "description": "[ECM 44583] Primary knock-limited spark advance. In Row 9 (Load 2.00 / Full Boost), timing is strictly preserved at conservative 10.75°–11.00° (protects factory 10.2:1 compression and powdered metal rods on 93 octane).",
+      "kind": "table",
+      "axis_label": "Engine Load \\ Engine RPM",
+      "cols": ["1,000", "1,850", "2,450", "2,800", "3,250", "5,000", "5,750", "6,000", "6,250", "6,500", "7,200"],
+      "rows": [
+        "Load 0.30 (Light Cruise)",
+        "Load 0.50 (Moderate)",
+        "Load 0.70 (Entering Boost)",
+        "Load 0.80 (Boost)",
+        "Load 2.00 (Full Boost)"
+      ],
+      "v000_matrix": [
+        ["42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00"],
+        ["32.00", "32.00", "32.00", "32.00", "32.00", "34.00", "34.00", "34.00", "34.00", "34.00", "34.00"],
+        ["18.00", "20.00", "21.00", "22.00", "23.00", "24.00", "24.00", "24.00", "24.00", "24.00", "24.00"],
+        ["6.50",  "13.50", "15.00", "16.50", "17.00", "18.00", "18.00", "18.00", "18.00", "18.00", "18.00"],
+        ["-7.31", "-9.00", "1.65",  "4.14",  "8.00",  "11.50", "11.50", "11.50", "11.25", "11.00", "10.75"]
+      ],
+      "v001_matrix": [
+        ["42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00"],
+        ["32.00", "32.00", "32.00", "32.00", "32.00", "34.00", "34.00", "34.00", "34.00", "34.00", "34.00"],
+        ["18.00", "20.00", "21.00", "22.00", "23.00", "24.00", "24.00", "24.00", "24.00", "24.00", "24.00"],
+        ["6.50",  "13.50", "15.00", "16.50", "17.00", "18.00", "18.00", "18.00", "18.00", "18.00", "18.00"],
+        ["-7.31", "-9.00", "1.65",  "4.14",  "8.00",  "11.00", "11.00", "11.00", "11.00", "11.00", "10.75"]
+      ]
+    },
+    {
+      "id": "12011",
+      "name": "Injector Flow Rate High",
+      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate High",
+      "description": "[ECM 12011] Linear flow slope for Siemens Deka 60 lb/hr injectors at rated reference pressure.",
       "kind": "scalar",
-      "unit": "multiplier",
-      "v000": "0.484",
-      "v001": "0.484"
+      "unit": "lb/s",
+      "v000": "0.016700000 (~60.12 lb/hr)",
+      "v001": "0.016700000 (~60.12 lb/hr)"
+    },
+    {
+      "id": "12010",
+      "name": "Injector Flow Rate Low",
+      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate Low",
+      "description": "[ECM 12010] Low pulsewidth non-linear slope for Siemens Deka 60 lb/hr injectors.",
+      "kind": "scalar",
+      "unit": "lb/s",
+      "v000": "0.017500000 (~63.00 lb/hr)",
+      "v001": "0.017500000 (~63.00 lb/hr)"
+    },
+    {
+      "id": "12012",
+      "name": "Injector Breakpoint",
+      "path": "Engine / Fuel / General / Injector Control / Injector Breakpoint",
+      "description": "[ECM 12012] Fuel mass transition point between low and high injector slopes.",
+      "kind": "scalar",
+      "unit": "lb",
+      "v000": "0.00003360",
+      "v001": "0.00003360"
     },
     {
       "id": "12163",
-      "name": "MAF Airflow vs. Voltage (30-Point Curve)",
+      "name": "MAF Airflow vs. Voltage (Diablo MAFia)",
       "path": "Engine / Airflow / General / MAF Calibration / MAF Airflow vs. Voltage",
-      "description": "[ECM] 12163 - Primary mass airflow sensor transfer function using authentic Ford voltage anchors across the 0.00V-5.00V range.",
+      "description": "[ECM 12163] Primary MAF transfer function for OEM SVT MAF sensor with DiabloSport MAFia interface.",
       "kind": "maf",
       "v000_curve": [
-        {"v": "0.380", "flow": "0.245"},
-        {"v": "0.500", "flow": "0.382"},
-        {"v": "0.600", "flow": "0.573"},
-        {"v": "0.700", "flow": "0.795"},
-        {"v": "0.900", "flow": "1.341"},
-        {"v": "1.000", "flow": "1.688"},
-        {"v": "1.200", "flow": "2.470"},
-        {"v": "1.500", "flow": "3.842"},
-        {"v": "2.000", "flow": "7.148"},
-        {"v": "2.500", "flow": "11.890"},
-        {"v": "3.000", "flow": "18.250"},
-        {"v": "3.500", "flow": "26.410"},
-        {"v": "4.000", "flow": "36.800"},
-        {"v": "4.500", "flow": "48.920"},
-        {"v": "4.900", "flow": "61.200"}
+        {"v": "0.380", "flow": "0.270"},
+        {"v": "0.500", "flow": "0.420"},
+        {"v": "0.600", "flow": "0.630"},
+        {"v": "0.700", "flow": "0.875"},
+        {"v": "0.900", "flow": "1.475"},
+        {"v": "1.000", "flow": "1.856"},
+        {"v": "1.200", "flow": "2.717"},
+        {"v": "1.500", "flow": "4.450"},
+        {"v": "2.000", "flow": "8.650"},
+        {"v": "2.500", "flow": "14.800"},
+        {"v": "3.000", "flow": "23.400"},
+        {"v": "3.500", "flow": "34.900"},
+        {"v": "4.000", "flow": "49.500"},
+        {"v": "4.500", "flow": "67.800"},
+        {"v": "4.900", "flow": "86.500"}
       ],
       "v001_curve": [
         {"v": "0.380", "flow": "0.270"},
@@ -359,50 +570,6 @@ tr.selected td { background: #1c3652; }
         {"v": "4.500", "flow": "67.800"},
         {"v": "4.900", "flow": "86.500"}
       ]
-    },
-    {
-      "id": "44583",
-      "name": "Spark Borderline Knock vs. RPM vs. Load",
-      "path": "Engine / Spark / Advance / Borderline / Spark Borderline Knock vs. RPM vs. Load",
-      "description": "[ECM] 44583 - Exact 10x12 matrix. Real SVT RPM columns: 1000 to 7200 RPM; real SVT load rows: 0.10 to 2.00. Notice Row 9 (Load 2.00) adjusted for boost safety.",
-      "kind": "table",
-      "cols": ["1,000", "1,850", "2,450", "2,800", "3,250", "5,000", "5,750", "6,000", "6,250", "6,500", "7,200"],
-      "rows": ["Load 0.30", "Load 0.50", "Load 0.70", "Load 0.80", "Load 2.00 (Boost Row)"],
-      "v000_matrix": [
-        ["42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00"],
-        ["32.00", "32.00", "32.00", "32.00", "32.00", "34.00", "34.00", "34.00", "34.00", "34.00", "34.00"],
-        ["18.00", "20.00", "21.00", "22.00", "23.00", "24.00", "24.00", "24.00", "24.00", "24.00", "24.00"],
-        ["6.50",  "13.50", "15.00", "16.50", "17.00", "18.00", "18.00", "18.00", "18.00", "18.00", "18.00"],
-        ["-7.31", "-9.00", "1.65",  "4.14",  "8.00",  "11.50", "11.50", "11.50", "11.25", "11.00", "10.75"]
-      ],
-      "v001_matrix": [
-        ["42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00"],
-        ["32.00", "32.00", "32.00", "32.00", "32.00", "34.00", "34.00", "34.00", "34.00", "34.00", "34.00"],
-        ["18.00", "20.00", "21.00", "22.00", "23.00", "24.00", "24.00", "24.00", "24.00", "24.00", "24.00"],
-        ["6.50",  "13.50", "15.00", "16.50", "17.00", "18.00", "18.00", "18.00", "18.00", "18.00", "18.00"],
-        ["-7.31", "-9.00", "1.65",  "4.14",  "8.00",  "13.50", "13.50", "13.50", "13.50", "13.50", "13.50"]
-      ]
-    },
-    {
-      "id": "44412",
-      "name": "VCT Angle vs. RPM vs. Load",
-      "path": "Engine / Airflow / Variable Camshaft / Configuration / VCT Angle vs. RPM vs. Load",
-      "description": "[ECM] 44412 - Exact 10x12 matrix. Real SVT Variable Camshaft Timing intake phase advance. Adds advance for mid-range spool up to 3,500 RPM, then locks out at 0.0° for high RPM boost protection.",
-      "kind": "table",
-      "cols": ["1,000", "1,850", "2,450", "2,800", "3,250", "5,000", "5,750", "6,000", "6,250", "6,500", "7,200"],
-      "rows": ["Load 0.40", "Load 0.60", "Load 0.80", "Load 1.00 (WOT / Boost)"],
-      "v000_matrix": [
-        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
-        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
-        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
-        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"]
-      ],
-      "v001_matrix": [
-        ["0.00", "-15.00", "-20.00", "-20.00", "-15.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
-        ["0.00", "-20.00", "-25.00", "-25.00", "-20.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
-        ["0.00", "-25.00", "-30.00", "-30.00", "-25.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
-        ["0.00", "-25.00", "-30.00", "-30.00", "-25.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"]
-      ]
     }
   ]
 }
@@ -411,11 +578,13 @@ tr.selected td { background: #1c3652; }
 <script>
 'use strict';
 const D = JSON.parse(document.getElementById('data').textContent);
-let selectedId = "44583"; // Default to Borderline Knock spark matrix
+let selectedId = "7596"; // Default to FRPS sensor transfer function
 
 function differs(p) {
   if (p.kind === 'scalar') return p.v000 !== p.v001;
-  if (p.kind === 'maf') return true;
+  if (p.kind === 'maf') {
+    return JSON.stringify(p.v000_curve) !== JSON.stringify(p.v001_curve);
+  }
   if (p.kind === 'table') {
     return JSON.stringify(p.v000_matrix) !== JSON.stringify(p.v001_matrix);
   }
@@ -464,6 +633,7 @@ function renderList() {
 function renderDetail() {
   const p = D.parameters.find(x => x.id === selectedId) || D.parameters[0];
   const container = document.getElementById('detail-panel');
+  const isChanged = differs(p);
   
   let html = `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
@@ -471,21 +641,22 @@ function renderDetail() {
         <h2 style="margin:0 0 4px; font-size:20px;">${p.name}</h2>
         <div style="color:var(--text-muted); font-size:13px;">ECM ID: <strong>${p.id}</strong> · ${p.path}</div>
       </div>
-      <span class="badge" style="background:#13293d;">${p.kind.toUpperCase()}</span>
+      <span class="badge" style="background:${isChanged ? '#3d2b12; color:#f5a623;' : '#13293d; color:var(--accent);'}">
+        ${isChanged ? 'MODIFIED IN V001' : 'IDENTICAL'}
+      </span>
     </div>
     <p style="color:#b2c5d9; font-size:14px; margin-top:0;">${p.description}</p>
   `;
 
   if (p.kind === 'scalar') {
-    const isChanged = p.v000 !== p.v001;
     html += `
       <div class="cards">
         <div class="card">
-          <h4>v000 · Stock Factory Tune</h4>
+          <h4>v000 · Inherited Return Tune (SVTv29.26)</h4>
           <div class="val" style="${isChanged ? 'color:var(--del-text)' : ''}">${p.v000} ${p.unit||''}</div>
         </div>
         <div class="card">
-          <h4>v001 · Boost Calibration</h4>
+          <h4>v001 · Safe Returnless Boost Baseline</h4>
           <div class="val" style="${isChanged ? 'color:var(--ins-text)' : ''}">${p.v001} ${p.unit||''}</div>
         </div>
       </div>
@@ -500,8 +671,8 @@ function renderDetail() {
           <thead>
             <tr>
               <th>Sensor Volts</th>
-              <th>v000 (Stock 70mm SVT Housing)</th>
-              <th>v001 (Upgraded 3" Blow-Through PMAS)</th>
+              <th>v000 (Inherited Parent)</th>
+              <th>v001 (Returnless Baseline)</th>
               <th>Percent Delta</th>
             </tr>
           </thead>
@@ -515,7 +686,7 @@ function renderDetail() {
           <td><strong>${pt.v} V</strong></td>
           <td style="color:#b5c4d4;">${pt.flow} lb/min</td>
           <td style="color:var(--ins-text); font-weight:600;">${v1.flow} lb/min</td>
-          <td style="color:${diff > 0 ? '#4ce6a1' : '#ff858d'}">${diff > 0 ? '+' : ''}${diff}%</td>
+          <td style="color:${diff != 0 ? (diff > 0 ? '#4ce6a1' : '#ff858d') : '#8b9fb5'}">${diff > 0 ? '+' : ''}${diff}%</td>
         </tr>
       `;
     });
@@ -523,13 +694,13 @@ function renderDetail() {
   } else if (p.kind === 'table') {
     html += `
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-        Cell comparison: <span style="color:var(--del-text); text-decoration:line-through;">Stock v000</span> → <span style="color:var(--ins-text); font-weight:bold;">Boost v001</span>.
+        Cell comparison: <span style="color:var(--del-text); text-decoration:line-through;">v000 Inherited Return</span> → <span style="color:var(--ins-text); font-weight:bold;">v001 Returnless Boost</span>.
       </p>
       <div class="scroll">
         <table class="matrix">
           <thead>
             <tr>
-              <th>Load \\ RPM</th>
+              <th>${p.axis_label || 'Row \\ Col'}</th>
               ${p.cols.map(c => `<th>${c}</th>`).join('')}
             </tr>
           </thead>
@@ -558,7 +729,7 @@ function renderDetail() {
 document.getElementById('search').oninput = renderList;
 document.getElementById('filter').onchange = renderList;
 document.getElementById('swap').onclick = () => {
-  alert('Swap view toggled (currently demonstrating v000 vs v001).');
+  alert('Comparing Parent (v000 SVTv29.26) against Candidate (v001 Returnless Boost).');
 };
 
 renderList();

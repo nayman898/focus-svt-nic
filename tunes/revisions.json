@@ -1,18 +1,39 @@
 {
   "schema_version": 1,
   "repository": "nayman898/focus-svt-nic",
-  "installed_production_baseline": null,
+  "installed_production_baseline": "v001",
   "revisions": [
     {
       "revision": "v000",
-      "filename": "v000-stock-read.hpt",
-      "sha256": "PENDING_FIRST_READ",
-      "bytes": null,
+      "filename": "SVTv29.26.hpt",
+      "sha256": "45F07925F65D03FB08B91D8B9BB88BD8E29DBC4E4AF48170472DBCDB5B0F63E0",
+      "bytes": 212349,
       "parent": null,
       "rollback": null,
-      "status": "Awaiting initial ECU read from vehicle",
-      "summary": "Original virgin ECU read from Nic's Focus SVT prior to any calibration edits.",
+      "status": "Inherited tune supplied to Nic; configured for return-style fuel system",
+      "summary": "Inherited baseline tune from previous tuner; flat 40 psi rail pressure, zero vacuum multiplier, 64°F cranking cliff, NA VCT overlap.",
       "parameter_changes": []
+    },
+    {
+      "revision": "v001",
+      "filename": "v001-returnless-boost-baseline.hpt",
+      "sha256": "9E58DDD78FDCC8BF3D7CC925D6728FDCD82B394F5579843553CF64D6818131F9",
+      "bytes": 220077,
+      "parent": "v000",
+      "rollback": "SVTv29.26.hpt",
+      "status": "Candidate ready for pre-flash review and first idle datalog",
+      "summary": "Safe returnless ERFS recovery: restored genuine Ford 0-70 psi FRPS transfer (ECM 7596), restored manifold vacuum multiplier 0.484 (ECM 6950), raised idle to 950 RPM (ECM 44218/17), smoothed 64°F cranking cliff (ECM 44519), cleaned 2,500 RPM open-loop lean pockets (ECM 44511), applied v037 VCT reversion lockout (ECM 44412), and preserved conservative 11.0° spark timing on Load 2.00 (ECM 44583) for stock 10.2:1 compression safety.",
+      "parameter_changes": [
+        "ECM 7596 (FRPS Transfer: restored 0-70 psi curve)",
+        "ECM 6950 (Manifold Vacuum Multiplier: 0.000 -> 0.484)",
+        "ECM 43000 (Target Differential Fuel Pressure: 39.15 psi)",
+        "ECM 44218 (Target Idle Speed Park/Neutral: 850 -> 950 RPM)",
+        "ECM 44217 (Target Idle Speed Drive: 850 -> 950 RPM)",
+        "ECM 44519 (Fuel Cranking vs. ECT: smoothed 64°F cliff from 0.335 to 0.850)",
+        "ECM 44511 (Fuel Base vs. RPM vs. TPS: 2500 RPM lean pockets 1.07/1.14 -> 1.00)",
+        "ECM 44412 (VCT Angle vs. RPM vs. Load: applied v037 reversion lockout above 3.5k in boost and across 4.5k-7.2k)",
+        "ECM 44583 (Spark Borderline Knock: verified 11.00° timing ceiling on Load 2.00)"
+      ]
     }
   ]
 }
