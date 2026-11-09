@@ -4,18 +4,15 @@ Calibration tracking, datalog analysis, diagnostic reviews, and VCM Scanner prof
 
 ---
 
-## 🚀 Getting Started (Step-by-Step for Nic)
+## 🚀 Getting Started & Immediate Next Steps
 
-1. **Fill out the Hardware Questionnaire:**
-   * Open and complete **[VEHICLE_INFO.md](VEHICLE_INFO.md)**.
-   * Provide as much detail as possible regarding the turbo/supercharger kit, target boost, injector part numbers, fuel pump, MAF housing, and wideband O2.
-2. **Pull the Virgin ECU Backup:**
-   * Follow the step-by-step instructions in **[docs/first-connection.md](docs/first-connection.md)**.
-   * Read the ECU via VCM Editor and save the baseline to `backups/v000-stock-read.hpt` and `tunes/v000-stock-read.hpt`.
-3. **Load the Scanner Profile:**
-   * Open VCM Scanner and load `profiles/Focus_SVT_Returnless_Boost.Channels.xml`.
-4. **Record the First Diagnostic Idle Log:**
-   * Capture a cold-start to warm-idle log and save it in `logs/`.
+> **👉 [Click Here for Nic's Immediate Next Steps Guide](docs/next-steps.md)**  
+> Review the 4-step checklist covering tune confirmation, hardware safety checks, BOV routing, and the first baseline idle log.
+
+1. **Hardware Info:** Completed in **[VEHICLE_INFO.md](VEHICLE_INFO.md)**.
+2. **Next Steps Checklist:** See **[docs/next-steps.md](docs/next-steps.md)** for immediate under-the-hood checks.
+3. **Interactive Calibration Diff Preview:** Open **[docs/index.html](docs/index.html)** (or view the [Live Web Demo](https://htmlpreview.github.io/?https://github.com/nayman898/focus-svt-nic/blob/main/docs/index.html)).
+4. **First Idle Log:** Follow **[docs/first-connection.md](docs/first-connection.md)** to capture the baseline.
 
 ---
 
