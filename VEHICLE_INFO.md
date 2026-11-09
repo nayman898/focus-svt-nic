@@ -15,21 +15,21 @@
 ---
 
 ### 2. Forced Induction (Boost Setup)
-* **Type:** [•] Turbocharger  |  [ ] Supercharger (Eaton M62 / Powerworks / ProCharger / Vortech)
+* **Type:** [x] Turbocharger  |  [ ] Supercharger (Eaton M62 / Powerworks / ProCharger / Vortech)
 * **Turbo / Blower Model & Brand:**Spa .64 [e.g. Garrett GT2871R / Pulsar G25-550 / Jackson Racing M62]
 * **Target Boost Pressure:** [e.g. 6 psi, 8 psi, 12 psi]
 * **Boost Control Method:**Wastegate unknown spring [e.g. Wastegate spring only, Manual boost controller (MBC), Electronic boost controller (EBC), Blower pulley size]
 * **Wastegate Spring / Base Pressure:** [e.g. 7 psi mechanical spring]
-* **Intercooler Setup:** [•] Air-to-Air  |  [ ] Air-to-Water  |  [ ] Non-intercooled
-* **Blow-off / Bypass Valve:** [ ] Recirculated to intake  |  [•] Vented to atmosphere (VTA)
+* **Intercooler Setup:** [x] Air-to-Air  |  [ ] Air-to-Water  |  [ ] Non-intercooled
+* **Blow-off / Bypass Valve:** [ ] Recirculated to intake  |  [x] Vented to atmosphere (VTA)
 ---
 
 ### 3. Engine Internals & Health
 * **Bottom End:** 
-  * [•] Stock SVT Bottom End (10.2:1 static compression, stock powdered-metal rods)
+  * [x] Stock SVT Bottom End (10.2:1 static compression, stock powdered-metal rods)
   * [ ] Forged Internals (forged rods, forged dish pistons — specify bore & compression ratio if known)
 * **Head & Valvetrain:**
-  * [•] Stock SVT Head with working Variable Cam Timing (VCT) intake cam
+  * [x] Stock SVT Head with working Variable Cam Timing (VCT) intake cam
   * [ ] Aftermarket Cams / Locked VCT
 * **Head Studs / Gasket:** [e.g. ARP head studs, OEM multi-layer steel (MLS) gasket]
 * **Spark Plugs:**
@@ -43,7 +43,7 @@
 ### 4. Fuel System (Returnless ERFS)
 * **Fuel Delivery Type:** **Returnless (Factory Ford ERFS with FPDM)**
 * **Fuel Pump:** 
-  * [•] Stock SVT Focus in-tank pump (~190 LPH)
+  * [x] Stock SVT Focus in-tank pump (~190 LPH)
   * [ ] Stock pump + Kenne Bell Boost-A-Pump (BAP)
   * [ ] Upgraded in-tank pump (e.g. AEM 340, Walbro 255, DeatschWerks DW300)
 * **Fuel Pump Driver Module (FPDM):** [e.g. Factory stock FPDM / Upgraded wiring]
@@ -58,7 +58,7 @@
 ### 5. Fuel Injectors
 * **Brand & Part #:**Siemens Deka 60lb [e.g. Siemens Deka 60 lb (107961), Ford Racing 39 lb Cobra (0280156127), Ford Racing 42 lb (0280150558), Bosch EV14 52 lb]
 * **Rated Flow:** [e.g. 30 lb/hr stock, 39 lb, 42 lb, 60 lb]
-* **Connector Type:** [•] USCAR (direct plug-in)  |  [ ] EV1 (with adapters)
+* **Connector Type:** [x] USCAR (direct plug-in)  |  [ ] EV1 (with adapters)
 * **Characterization Data Sheet:** [ ] Have Ford Racing value summary sheet  |  [ ] Need data generated
 
 ---
@@ -69,10 +69,10 @@
   * [ ] PMAS HPX blade-style in 3" housing
   * [ ] SCT BA-2400 / BA-2600 / BA-3000
   * [ ] Lightning 90mm MAF
-  * [•] Other: Stock MAF sensor with diablo extension
+  * [x] Other: Stock MAF sensor with diablo extension
 * **MAF Location:**
   * [ ] **Blow-Through** (after the turbo/intercooler, before the throttle body)
-  * [•] **Draw-Through** (before the turbo inlet / supercharger, right behind the air filter)
+  * [x] **Draw-Through** (before the turbo inlet / supercharger, right behind the air filter)
 * **Intake Piping Diameter:**2.75" [e.g. 2.75", 3.0", 3.5"]
 
 ---
@@ -87,16 +87,16 @@
 ---
 
 ### 8. Drivetrain & Exhaust
-* **Clutch / Flywheel:** [ ] Stock Dual-Mass Flywheel  |  [•] Single-Mass Flywheel with upgraded clutch disc
-* **Header / Downpipe:** [ ] OEM SVT 4-2-1 Tri-Y Header  |  [•] Custom turbo manifold
-* **Catalytic Converter:** [ ] Factory Cat  |  [ ] High-Flow Cat  |  [•] Catless Off-Road Test Pipe
+* **Clutch / Flywheel:** [ ] Stock Dual-Mass Flywheel  |  [x] Single-Mass Flywheel with upgraded clutch disc
+* **Header / Downpipe:** [ ] OEM SVT 4-2-1 Tri-Y Header  |  [x] Custom turbo manifold
+* **Catalytic Converter:** [ ] Factory Cat  |  [ ] High-Flow Cat  |  [x] Catless Off-Road Test Pipe
 * **Exhaust Diameter:**2.5" [e.g. Stock 2.25", 2.5", 3.0"]
 
 ---
 
 ### 9. Current Status & Driving Goals
-* **Does the car currently start and idle?** [ ] Yes  |  [ ] No  |  [•] Runs rough
-* **Can it be driven gently?** [•] Yes  |  [ ] Strictly stationary for now
+* **Does the car currently start and idle?** [ ] Yes  |  [ ] No  |  [x] Runs rough
+* **Can it be driven gently?** [x] Yes  |  [ ] Strictly stationary for now
 * **Current Check Engine Light (CEL/DTCs):**None [List any codes present]
 * **Primary Tuning Goals:**
   1. daily if possible 
