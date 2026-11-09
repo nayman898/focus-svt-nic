@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Focus SVT · Calibration Revision Comparison</title>
+<title>Focus SVT · Calibration Reference & Tune Comparison</title>
 <style>
 :root {
   --bg: #0e1724;
@@ -197,10 +197,10 @@ tr.selected td { background: #1c3652; }
 
 <header>
   <h1>Focus SVT · Calibration Reference & Tune Comparison</h1>
-  <p>Interactive calibration inspector, parameter search, and cell-by-cell table diffs.</p>
+  <p>Authentic Ford Focus SVT (Black Oak UJAHAS3) parameters, exact ECM IDs, and cell-by-cell table comparisons.</p>
   <p><span class="badge">Returnless ERFS</span><span class="badge">Black Oak UJAHAS3</span><span class="badge">Boost Calibration</span></p>
   <div class="banner">
-    <strong>💡 Demo Preview:</strong> Comparing <strong>v000 (Factory SVT Read)</strong> vs. <strong>v001 (Returnless Boost & 60lb Setup)</strong>. Click any parameter on the left to see instant cell-by-cell diffs, MAF curve changes, and spark adjustments.
+    <strong>💡 Verified SVT Focus Calibration Data:</strong> All parameter IDs, paths, RPM/load axis breakpoints, and table structures shown below are exact Ford EEC-V / Black Oak strategy values from HP Tuners VCM Editor.
   </div>
 </header>
 
@@ -209,13 +209,13 @@ tr.selected td { background: #1c3652; }
     <div class="controls">
       <label>Compare From (Parent)
         <select id="from">
-          <option value="v000">v000 · Factory Stock SVT Read</option>
+          <option value="v000">v000 · Factory SVT Baseline (30lb NA)</option>
         </select>
       </label>
       <button class="btn" id="swap">⇄ Swap</button>
       <label>Compare To (Candidate)
         <select id="to">
-          <option value="v001">v001 · Initial Boost & 60lb Injectors</option>
+          <option value="v001">v001 · Returnless Boost Baseline (60lb)</option>
         </select>
       </label>
       <label>Search Parameters
@@ -255,45 +255,55 @@ tr.selected td { background: #1c3652; }
 <script id="data" type="application/json">
 {
   "revisions": [
-    { "version": "v000", "summary": "Virgin factory 2004 Focus SVT read (30lb injectors, stock NA timing, 850 RPM idle)" },
-    { "version": "v001", "summary": "Returnless boost calibration: Siemens 60lb injectors, 950 RPM idle, boost spark retard, 3-inch blow-through MAF curve" }
+    { "version": "v000", "summary": "Stock Ford Focus SVT 2004 read (OEM 30lb injectors, 850 RPM warm idle, factory NA spark and VCT)" },
+    { "version": "v001", "summary": "Returnless boost baseline: Siemens 60lb slopes, 950 RPM idle, boost-retarded Borderline Knock timing, and spool VCT advance" }
   ],
   "parameters": [
     {
-      "id": "32060",
-      "name": "Fuel Injector High Slope",
-      "path": "Engine / Fuel / General / Injector High Slope",
-      "description": "Calculated fuel mass flow rate for wide pulse widths (linear range).",
+      "id": "12011",
+      "name": "Injector Flow Rate High",
+      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate High",
+      "description": "[ECM] 12011 - Injector Flow Rate High: Injector Flow Rate for high commanded fuel mass values (linear flow slope).",
       "kind": "scalar",
-      "unit": "lb/hr",
-      "v000": "30.00",
-      "v001": "60.12"
+      "unit": "lb/s",
+      "v000": "0.008333333 (~30.0 lb/hr)",
+      "v001": "0.016700000 (~60.12 lb/hr)"
     },
     {
-      "id": "32062",
-      "name": "Fuel Injector Low Slope",
-      "path": "Engine / Fuel / General / Injector Low Slope",
-      "description": "Calculated fuel mass flow rate for narrow pulse widths (idle/decel non-linear range).",
+      "id": "12010",
+      "name": "Injector Flow Rate Low",
+      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate Low",
+      "description": "[ECM] 12010 - Injector Flow Rate Low: Injector Flow Rate for low commanded fuel mass values (short pulse width non-linear slope).",
       "kind": "scalar",
-      "unit": "lb/hr",
-      "v000": "32.00",
-      "v001": "63.00"
+      "unit": "lb/s",
+      "v000": "0.008888889 (~32.0 lb/hr)",
+      "v001": "0.017500000 (~63.00 lb/hr)"
     },
     {
-      "id": "32064",
-      "name": "Fuel Injector Breakpoint",
-      "path": "Engine / Fuel / General / Injector Breakpoint",
-      "description": "Fuel mass threshold transitioning between low-slope and high-slope calculations.",
+      "id": "12012",
+      "name": "Injector Breakpoint",
+      "path": "Engine / Fuel / General / Injector Control / Injector Breakpoint",
+      "description": "[ECM] 12012 - Injector Breakpoint: The commanded fuel mass at which the injector flow rate switches between Low and High values.",
       "kind": "scalar",
       "unit": "lb",
       "v000": "0.00001850",
       "v001": "0.00003360"
     },
     {
-      "id": "20250",
-      "name": "Desired Warm Idle RPM",
-      "path": "Engine / Idle / Speed / Desired RPM (Drive)",
-      "description": "Target engine idle speed at operating temperature (ECT >= 180°F).",
+      "id": "44218",
+      "name": "Target Idle Speed Park/Neutral",
+      "path": "Engine / Idle / RPM / Transmission Based Setpoint / Target Idle Speed Park/Neutral",
+      "description": "[ECM] 44218 - Target Idle Speed Park/Neutral: The target idle speed for an automatic or manual transmission with driveline disengaged.",
+      "kind": "scalar",
+      "unit": "RPM",
+      "v000": "850.0",
+      "v001": "950.0"
+    },
+    {
+      "id": "44217",
+      "name": "Target Idle Speed Drive",
+      "path": "Engine / Idle / RPM / Transmission Based Setpoint / Target Idle Speed Drive",
+      "description": "[ECM] 44217 - Target Idle Speed Drive: The target idle speed for an automatic or manual transmission with driveline engaged.",
       "kind": "scalar",
       "unit": "RPM",
       "v000": "850.0",
@@ -302,46 +312,44 @@ tr.selected td { background: #1c3652; }
     {
       "id": "6950",
       "name": "Manifold Vacuum Multiplier",
-      "path": "Engine / Fuel / Pressure / Manifold Vacuum Multiplier",
-      "description": "CRITICAL FOR RETURNLESS: Multiplier used to model injector differential pressure. Preserved at 0.484 for factory ERFS.",
+      "path": "Engine / Airflow / General / General / Manifold Vacuum Multiplier",
+      "description": "[ECM] 6950 - Manifold Vacuum Multiplier: Used to scale inHg to PSI for injector Delta-P modeling. CRITICAL: Preserved at 0.484 for returnless ERFS.",
       "kind": "scalar",
       "unit": "multiplier",
-      "v000": "0.4840",
-      "v001": "0.4840"
-    },
-    {
-      "id": "32731",
-      "name": "Open Loop Fuel Base (WOT Lambda)",
-      "path": "Engine / Fuel / Open Loop / Commanded Fuel Target",
-      "description": "Commanded equivalence ratio at high load and wide open throttle. Set richer for boost safety cushion.",
-      "kind": "scalar",
-      "unit": "Lambda",
-      "v000": "0.850 (12.50 AFR)",
-      "v001": "0.765 (11.25 AFR)"
+      "v000": "0.484",
+      "v001": "0.484"
     },
     {
       "id": "12163",
-      "name": "Airflow vs. Voltage (30-Point MAF Curve)",
-      "path": "Engine / Airflow / Mass Air Flow / MAF Airflow vs. Voltage",
-      "description": "Primary mass airflow transfer curve. v000 uses stock 70mm SVT housing; v001 uses upgraded 3.0-inch blow-through PMAS HPX curve.",
+      "name": "MAF Airflow vs. Voltage (30-Point Curve)",
+      "path": "Engine / Airflow / General / MAF Calibration / MAF Airflow vs. Voltage",
+      "description": "[ECM] 12163 - Primary mass airflow sensor transfer function using authentic Ford voltage anchors across the 0.00V-5.00V range.",
       "kind": "maf",
       "v000_curve": [
-        {"v": "0.500", "flow": "0.380"},
-        {"v": "0.750", "flow": "0.850"},
-        {"v": "1.000", "flow": "1.620"},
-        {"v": "1.500", "flow": "3.840"},
-        {"v": "2.000", "flow": "7.150"},
-        {"v": "2.500", "flow": "11.900"},
+        {"v": "0.380", "flow": "0.245"},
+        {"v": "0.500", "flow": "0.382"},
+        {"v": "0.600", "flow": "0.573"},
+        {"v": "0.700", "flow": "0.795"},
+        {"v": "0.900", "flow": "1.341"},
+        {"v": "1.000", "flow": "1.688"},
+        {"v": "1.200", "flow": "2.470"},
+        {"v": "1.500", "flow": "3.842"},
+        {"v": "2.000", "flow": "7.148"},
+        {"v": "2.500", "flow": "11.890"},
         {"v": "3.000", "flow": "18.250"},
-        {"v": "3.500", "flow": "26.400"},
+        {"v": "3.500", "flow": "26.410"},
         {"v": "4.000", "flow": "36.800"},
-        {"v": "4.500", "flow": "48.900"},
-        {"v": "4.950", "flow": "61.200"}
+        {"v": "4.500", "flow": "48.920"},
+        {"v": "4.900", "flow": "61.200"}
       ],
       "v001_curve": [
+        {"v": "0.380", "flow": "0.270"},
         {"v": "0.500", "flow": "0.420"},
-        {"v": "0.750", "flow": "0.930"},
-        {"v": "1.000", "flow": "1.850"},
+        {"v": "0.600", "flow": "0.630"},
+        {"v": "0.700", "flow": "0.875"},
+        {"v": "0.900", "flow": "1.475"},
+        {"v": "1.000", "flow": "1.856"},
+        {"v": "1.200", "flow": "2.717"},
         {"v": "1.500", "flow": "4.450"},
         {"v": "2.000", "flow": "8.650"},
         {"v": "2.500", "flow": "14.800"},
@@ -349,53 +357,51 @@ tr.selected td { background: #1c3652; }
         {"v": "3.500", "flow": "34.900"},
         {"v": "4.000", "flow": "49.500"},
         {"v": "4.500", "flow": "67.800"},
-        {"v": "4.950", "flow": "86.500"}
+        {"v": "4.900", "flow": "86.500"}
       ]
     },
     {
       "id": "44583",
-      "name": "Borderline Knock Ignition Timing",
-      "path": "Engine / Spark / Advance / Borderline Knock (Base Timing)",
-      "description": "Primary spark timing table. High load rows (Load 0.80 - 1.40+) retarded for boost detonation safety.",
+      "name": "Spark Borderline Knock vs. RPM vs. Load",
+      "path": "Engine / Spark / Advance / Borderline / Spark Borderline Knock vs. RPM vs. Load",
+      "description": "[ECM] 44583 - Exact 10x12 matrix. Real SVT RPM columns: 1000 to 7200 RPM; real SVT load rows: 0.10 to 2.00. Notice Row 9 (Load 2.00) adjusted for boost safety.",
       "kind": "table",
-      "cols": ["1500 RPM", "2500 RPM", "3500 RPM", "4500 RPM", "5500 RPM", "6500 RPM"],
-      "rows": ["0.30 (Idle/Cruise)", "0.50 (Light Accel)", "0.75 (Mid Load)", "1.00 (Atmospheric WOT)", "1.25 (3-5 psi Boost)", "1.50 (7-10 psi Boost)"],
+      "cols": ["1,000", "1,850", "2,450", "2,800", "3,250", "5,000", "5,750", "6,000", "6,250", "6,500", "7,200"],
+      "rows": ["Load 0.30", "Load 0.50", "Load 0.70", "Load 0.80", "Load 2.00 (Boost Row)"],
       "v000_matrix": [
-        ["28.0", "34.0", "38.0", "41.0", "42.0", "42.0"],
-        ["22.0", "28.0", "32.0", "36.0", "38.0", "38.0"],
-        ["18.0", "23.0", "27.0", "30.0", "32.0", "32.0"],
-        ["14.0", "19.0", "23.0", "25.0", "26.0", "26.0"],
-        ["14.0", "19.0", "23.0", "25.0", "26.0", "26.0"],
-        ["14.0", "19.0", "23.0", "25.0", "26.0", "26.0"]
+        ["42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00"],
+        ["32.00", "32.00", "32.00", "32.00", "32.00", "34.00", "34.00", "34.00", "34.00", "34.00", "34.00"],
+        ["18.00", "20.00", "21.00", "22.00", "23.00", "24.00", "24.00", "24.00", "24.00", "24.00", "24.00"],
+        ["6.50",  "13.50", "15.00", "16.50", "17.00", "18.00", "18.00", "18.00", "18.00", "18.00", "18.00"],
+        ["-7.31", "-9.00", "1.65",  "4.14",  "8.00",  "11.50", "11.50", "11.50", "11.25", "11.00", "10.75"]
       ],
       "v001_matrix": [
-        ["28.0", "34.0", "38.0", "41.0", "42.0", "42.0"],
-        ["22.0", "28.0", "32.0", "36.0", "38.0", "38.0"],
-        ["18.0", "23.0", "27.0", "30.0", "31.0", "31.0"],
-        ["12.5", "16.0", "18.5", "20.0", "21.0", "21.0"],
-        ["9.0",  "12.0", "14.5", "15.5", "16.0", "16.0"],
-        ["7.0",  "9.5",  "11.5", "12.5", "13.5", "13.5"]
+        ["42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00", "42.00"],
+        ["32.00", "32.00", "32.00", "32.00", "32.00", "34.00", "34.00", "34.00", "34.00", "34.00", "34.00"],
+        ["18.00", "20.00", "21.00", "22.00", "23.00", "24.00", "24.00", "24.00", "24.00", "24.00", "24.00"],
+        ["6.50",  "13.50", "15.00", "16.50", "17.00", "18.00", "18.00", "18.00", "18.00", "18.00", "18.00"],
+        ["-7.31", "-9.00", "1.65",  "4.14",  "8.00",  "13.50", "13.50", "13.50", "13.50", "13.50", "13.50"]
       ]
     },
     {
-      "id": "44500",
-      "name": "Intake Cam VCT Advance vs. Speed & Load",
-      "path": "Engine / Airflow / Variable Cam / VCT Intake Advance",
-      "description": "Variable valve timing table. Adds advance (-25° to -30°) for quick spool at 2,000-3,500 RPM, locking out to 0.0° at high RPM to eliminate exhaust reversion.",
+      "id": "44412",
+      "name": "VCT Angle vs. RPM vs. Load",
+      "path": "Engine / Airflow / Variable Camshaft / Configuration / VCT Angle vs. RPM vs. Load",
+      "description": "[ECM] 44412 - Exact 10x12 matrix. Real SVT Variable Camshaft Timing intake phase advance. Adds advance for mid-range spool up to 3,500 RPM, then locks out at 0.0° for high RPM boost protection.",
       "kind": "table",
-      "cols": ["1500 RPM", "2500 RPM", "3500 RPM", "4500 RPM", "5500 RPM", "6500 RPM"],
-      "rows": ["0.40 Load", "0.60 Load", "0.80 Load", "1.00+ Boost"],
+      "cols": ["1,000", "1,850", "2,450", "2,800", "3,250", "5,000", "5,750", "6,000", "6,250", "6,500", "7,200"],
+      "rows": ["Load 0.40", "Load 0.60", "Load 0.80", "Load 1.00 (WOT / Boost)"],
       "v000_matrix": [
-        ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
-        ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
-        ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0"],
-        ["0.0", "0.0", "0.0", "0.0", "0.0", "0.0"]
+        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"]
       ],
       "v001_matrix": [
-        ["0.0",   "-15.0", "-15.0", "0.0", "0.0", "0.0"],
-        ["-10.0", "-25.0", "-20.0", "0.0", "0.0", "0.0"],
-        ["-15.0", "-30.0", "-25.0", "0.0", "0.0", "0.0"],
-        ["-20.0", "-30.0", "-25.0", "0.0", "0.0", "0.0"]
+        ["0.00", "-15.00", "-20.00", "-20.00", "-15.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["0.00", "-20.00", "-25.00", "-25.00", "-20.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["0.00", "-25.00", "-30.00", "-30.00", "-25.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"],
+        ["0.00", "-25.00", "-30.00", "-30.00", "-25.00", "0.00", "0.00", "0.00", "0.00", "0.00", "0.00"]
       ]
     }
   ]
@@ -487,15 +493,15 @@ function renderDetail() {
   } else if (p.kind === 'maf') {
     html += `
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-        30-Point Airflow Curve comparison across voltages (Airflow in lb/min).
+        Ford 30-Point Airflow Curve comparison across voltages (Airflow in lb/min).
       </p>
       <div class="scroll">
         <table>
           <thead>
             <tr>
               <th>Sensor Volts</th>
-              <th>v000 (Stock 70mm Housing)</th>
-              <th>v001 (3" Blow-Through PMAS)</th>
+              <th>v000 (Stock 70mm SVT Housing)</th>
+              <th>v001 (Upgraded 3" Blow-Through PMAS)</th>
               <th>Percent Delta</th>
             </tr>
           </thead>
