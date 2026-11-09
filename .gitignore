@@ -1,0 +1,26 @@
+# Privacy and local device data
+.local/
+backups/*
+!backups/.gitkeep
+logs/*
+!logs/.gitkeep
+reports/*
+!reports/.gitkeep
+*.hpl
+*.csv
+
+# Explicitly version tune files and metadata in tunes/
+tunes/*
+!tunes/.gitkeep
+!tunes/*.hpt
+!tunes/*.md
+!tunes/*.json
+
+# Scratch and temporary files
+scratch/
+*.tmp
+*.bak
+__pycache__/
+*.pyc
+Thumbs.db
+.DS_Store

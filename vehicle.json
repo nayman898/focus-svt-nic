@@ -1,0 +1,66 @@
+{
+  "owner": "Nic",
+  "make": "Ford",
+  "model": "Focus SVT",
+  "model_year": null,
+  "vin": null,
+  "ecu_strategy": "UJAHAS3",
+  "calibration_target": "Safe Forced Induction Calibration on Returnless ERFS",
+  "current_tune_file": "v000-stock-read.hpt",
+  "installed_tune": null,
+  "production_baseline": null,
+  "fuel_system": {
+    "type": "Electronic Returnless Fuel System (ERFS)",
+    "fpdm_status": "OEM Fuel Pump Driver Module active",
+    "pump": "To be confirmed (OEM SVT / Upgraded / BAP)",
+    "target_differential_pressure_psi": 39.15,
+    "frps_model": "OEM Ford Fuel Rail Pressure Sensor",
+    "frps_transfer_linear_psi": {
+      "0.5v": 0.0,
+      "4.5v": 70.0
+    },
+    "manifold_vacuum_multiplier_ecm6950": 0.484,
+    "pressure_compensation_multipliers": "Enabled and dynamic (do not flatten)"
+  },
+  "forced_induction": {
+    "type": null,
+    "model": null,
+    "target_boost_psi": null,
+    "intercooler": null,
+    "bov_recirculated": null
+  },
+  "engine": {
+    "displacement_l": 2.0,
+    "internals": "To be confirmed (Stock 10.2:1 vs Forged)",
+    "cams_vct": "Stock SVT VCT active",
+    "spark_plugs": {
+      "part_number": null,
+      "gap_inches": null
+    }
+  },
+  "injectors": {
+    "brand": null,
+    "rated_flow_lb_hr": null,
+    "impedance": "High",
+    "high_slope_lb_s": null,
+    "low_slope_lb_s": null,
+    "breakpoint_lb": null,
+    "voltage_offset_table": null
+  },
+  "maf": {
+    "type": null,
+    "housing_diameter_inches": null,
+    "location": null,
+    "transfer_function_status": "Pending verification"
+  },
+  "wideband": {
+    "brand_model": null,
+    "logging_channel": null
+  },
+  "operational_limits": {
+    "max_fpdm_duty_cycle_pct": 45.0,
+    "max_boost_lambda": 0.80,
+    "max_ect_f": 220,
+    "target_warm_idle_rpm": 950
+  }
+}

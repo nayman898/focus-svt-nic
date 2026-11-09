@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "repository": "nayman898/focus-svt-nic",
+  "installed_production_baseline": null,
+  "revisions": [
+    {
+      "revision": "v000",
+      "filename": "v000-stock-read.hpt",
+      "sha256": "PENDING_FIRST_READ",
+      "bytes": null,
+      "parent": null,
+      "rollback": null,
+      "status": "Awaiting initial ECU read from vehicle",
+      "summary": "Original virgin ECU read from Nic's Focus SVT prior to any calibration edits.",
+      "parameter_changes": []
+    }
+  ]
+}
