@@ -5,34 +5,33 @@
   "revisions": [
     {
       "revision": "v000",
-      "filename": "SVTv29.26.hpt",
-      "sha256": "45F07925F65D03FB08B91D8B9BB88BD8E29DBC4E4AF48170472DBCDB5B0F63E0",
-      "bytes": 212349,
+      "filename": "SVT Tune.hpt",
+      "sha256": "E21BAC258B66BE02A6D56BEEDA483E54BA4DE7491B1BDE8D4480EB890885207B",
+      "bytes": 214909,
       "parent": null,
       "rollback": null,
-      "status": "Inherited tune supplied to Nic; configured for return-style fuel system",
-      "summary": "Inherited baseline tune from previous tuner; flat 40 psi rail pressure, zero vacuum multiplier, 64°F cranking cliff, NA VCT overlap.",
+      "status": "Native vehicle baseline read; clean factory naturally aspirated architecture with returnless ERFS",
+      "summary": "Native baseline read from Nic's vehicle environment. Features genuine returnless ERFS (0-70 psi FRPS, 0.484 vacuum mult), but lacks forced induction calibration (stock 30 lb injectors, 25-35 deg NA spark advance, factory NA cam overlap).",
       "parameter_changes": []
     },
     {
       "revision": "v001",
-      "filename": "v001-returnless-boost-baseline.hpt",
-      "sha256": "9E58DDD78FDCC8BF3D7CC925D6728FDCD82B394F5579843553CF64D6818131F9",
-      "bytes": 220077,
+      "filename": "v001-SVT-Tune-parent.hpt",
+      "sha256": "5F6096E1778B81F8019ECC8218B7FF13F86DBB3533E506349101B85BD9163731",
+      "bytes": 215757,
       "parent": "v000",
-      "rollback": "SVTv29.26.hpt",
-      "status": "Candidate ready for pre-flash review and first idle datalog",
-      "summary": "Safe returnless ERFS recovery: restored genuine Ford 0-70 psi FRPS transfer (ECM 7596), restored manifold vacuum multiplier 0.484 (ECM 6950), raised idle to 950 RPM (ECM 44218/17), smoothed 64°F cranking cliff (ECM 44519), cleaned 2,500 RPM open-loop lean pockets (ECM 44511), applied v037 VCT reversion lockout (ECM 44412), and preserved conservative 11.0° spark timing on Load 2.00 (ECM 44583) for stock 10.2:1 compression safety.",
+      "rollback": "SVT Tune.hpt",
+      "status": "Official clean candidate ready for pre-flash review and first idle datalog",
+      "summary": "Clean forced induction baseline derived directly from SVT Tune.hpt: scaled to Siemens Deka 60 lb/hr injectors (ECM 12011/10/12/13), expanded and clamped spark timing to safe 11.0°-11.5° ceiling on Load 2.00 (ECM 44583), applied v037 VCT reversion lockout (ECM 44412), lowered cooling fan triggers to 196°F/205°F, and raised idle target to 950 RPM (ECM 44218/17) while preserving 100% of factory returnless ERFS architecture.",
       "parameter_changes": [
-        "ECM 7596 (FRPS Transfer: restored 0-70 psi curve)",
-        "ECM 6950 (Manifold Vacuum Multiplier: 0.000 -> 0.484)",
-        "ECM 43000 (Target Differential Fuel Pressure: 39.15 psi)",
-        "ECM 44218 (Target Idle Speed Park/Neutral: 850 -> 950 RPM)",
-        "ECM 44217 (Target Idle Speed Drive: 850 -> 950 RPM)",
-        "ECM 44519 (Fuel Cranking vs. ECT: smoothed 64°F cliff from 0.335 to 0.850)",
-        "ECM 44511 (Fuel Base vs. RPM vs. TPS: 2500 RPM lean pockets 1.07/1.14 -> 1.00)",
-        "ECM 44412 (VCT Angle vs. RPM vs. Load: applied v037 reversion lockout above 3.5k in boost and across 4.5k-7.2k)",
-        "ECM 44583 (Spark Borderline Knock: verified 11.00° timing ceiling on Load 2.00)"
+        "ECM 12011 (Injector Flow Rate High: 0.009670 -> 0.016700 lb/s [60.1 lb/hr])",
+        "ECM 12010 (Injector Flow Rate Low: 0.010100 -> 0.017500 lb/s [63.0 lb/hr])",
+        "ECM 12012 (Injector Breakpoint: 0.00001800 -> 0.00003360 lb)",
+        "ECM 12013 (Injector PW Minimum: 0.00000000 -> 0.00089100 s)",
+        "ECM 44583 (Spark Borderline Knock: Load 2.00 boost ceiling clamped to 10.75°-11.50° BTDC)",
+        "ECM 44412 (VCT Angle vs. RPM vs. Load: applied v037 reversion lockout flat 0.00° across 4,500-7,200 RPM and in boost >3,500 RPM)",
+        "System Fans (Fan Low Speed: 216.0 -> 196.0°F / Fan High Speed: 228.0 -> 205.0°F)",
+        "ECM 44218/17 (Target Idle Speed: 850 -> 950 RPM)"
       ]
     }
   ]

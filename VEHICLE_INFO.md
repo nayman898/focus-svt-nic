@@ -56,7 +56,7 @@
 ---
 
 ### 5. Fuel Injectors
-* **Brand & Part #:** [e.g. Siemens Deka 60 lb (107961), Ford Racing 39 lb Cobra (0280156127), Ford Racing 42 lb (0280150558), Bosch EV14 52 lb] Siemens Deka 60lbs
+* **Brand & Part #:** [e.g. Siemens Deka 60 lb (107961), Ford Racing 39 lb Cobra (0280-156-127), Ford Racing 42 lb (0280-150-558), Bosch EV14 52 lb] Siemens Deka 60lbs
 * **Rated Flow:** [e.g. 30 lb/hr stock, 39 lb, 42 lb, 60 lb] 60 lb 
 * **Connector Type:** [x] USCAR (direct plug-in)  |  [ ] EV1 (with adapters)
 * **Characterization Data Sheet:** [ ] Have Ford Racing value summary sheet  |  [•] Need data generated
