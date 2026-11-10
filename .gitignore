@@ -20,6 +20,8 @@ tunes/*
 scratch/
 *.tmp
 *.bak
+*.msi
+*.exe
 __pycache__/
 *.pyc
 Thumbs.db
