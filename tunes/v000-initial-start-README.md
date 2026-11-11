@@ -18,10 +18,10 @@
 
 ## Step 1 — Create `v000-initial-start.hpt` & Set VCM Editor Units
 
-1. Open **HP Tuners VCM Editor** and open [`tunes/Current Tune.hpt`]("Current Tune.hpt").
+1. Open **HP Tuners VCM Editor** and open [`tunes/Current Tune.hpt`](Current Tune.hpt).
 2. Immediately click **File -> Save As...** and save as:
    `tunes/v000-initial-start.hpt`
-   *(Never overwrite `SVTv29.26.hpt` in place.)*
+   *(Never overwrite `Current Tune.hpt` in place.)*
 3. Confirm your VCM Editor units match these before editing any cell:
    - **Pressure:** `psi`
    - **Temperature:** `°F`
