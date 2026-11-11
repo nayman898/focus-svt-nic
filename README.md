@@ -9,9 +9,10 @@
 
 ---
 
-## Start Here — Fresh `v000` Initial Start README
+## Start Here — Initial Start (`v000`) & MAFia Position 2 (`v001`)
 
 - **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).
+- **[`tunes/v001-mafia-pos2-README.md`](tunes/v001-mafia-pos2-README.md)** — **Next step (`v001`): `ECM 12163` MAF curve for Diablo MAFia Position `2` + 20-channel VCM Scanner XML import** (fixes the `~2.2x` rich overfueling/FMEM lockout seen in `v000`/`v001` logs and recovers missing RPM, Timing, STFT, IAC, and Fuel Pressure channels).
 
 ### Modular Navigator Reference Guides
 1. **[Master Build & Navigator Guide](docs/NIC_TUNE_BUILD_README.md)** — Hardware pre-flight, VCM Editor units, Navigator workflow, Compare check & abort thresholds.
@@ -46,5 +47,5 @@
 - **[SVTv29.26 Deep Calibration Reference](docs/SVTv29.26_CALIBRATION_REFERENCE.md)** — Verified table/scalar dump of `tunes/SVTv29.26.hpt`.
 - **[First Connection Guide](docs/first-connection.md)** & **[Next Steps](docs/next-steps.md)** — Pull untouched backup, setup Scanner channels, warm idle validation.
 - **[Visual Diff Viewer (`docs/index.html`)](docs/index.html)** — Browser compare page (`SVTv29.26.hpt` vs `v000-initial-start.hpt`).
-- **[VCM Scanner Profile](profiles/Focus_SVT_Returnless_Boost.Channels.xml)** — Channel layout including FRP, FPDM Duty Cycle, STFT, O2, Spark, KR, and MAF.
+- **[VCM Scanner Profile](profiles/Focus_SVT_Returnless_Boost.Channels.xml)** — Proven 20-channel `UJAHAS3` Black Oak layout (`2135` RPM, `2500` Timing, `6304` STFT B1, `6507` FRPS Volts, `6506` FP Cmd DC, `2300/2302` MAF, `2082` IAC, `12942/12947` CL/FMEM).
 - **Privacy Check:** Run `python tools/verify-privacy.py --all` before committing any logs or docs.

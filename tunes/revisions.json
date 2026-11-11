@@ -37,6 +37,19 @@
         "ECM 32988 (Idle Dashpot Pre-Position: 2,150/3,150/4,150 RPM 0.78/1.11/1.50 -> 0.55/0.80/1.00)",
         "ECM 24030/24031/24035 (High Fan Enable/Disable/High-Load: 225/215/235 -> 205.0/199.0/205.0 F)"
       ]
+    },
+    {
+      "revision": "v001",
+      "filename": "v001-mafia-pos2.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v000-initial-start.hpt",
+      "rollback": "v000-initial-start.hpt",
+      "status": "Pending manual VCM Editor build by Nic using tunes/v001-mafia-pos2-README.md",
+      "summary": "Calibrates ECM 12163 MAF Airflow vs. Voltage for stock Focus SVT MAF in 2.75 in draw-through intake with DiabloSport MAFia dial at Position 2 (5.5V->5.0V), anchored to 0.922 V (188.8 AD) logged warm idle -> 4.91 lb/h UI (~0.619 lb/min true airflow with +4.8% rich margin).",
+      "parameter_changes": [
+        "ECM 12163 (MAF Airflow vs. Voltage: replace SVTv29.26 PMAS HPX curve 0.0..410.6 lb/h with smooth convex Position 2 curve 0.00..337.71 lb/h UI / 0.0000..5.6285 lb/min Editor UI; 0.90V=4.63, 1.00V=5.90, 1.20V=9.10, 2.00V=32.86, 3.00V=95.51, 3.80V=179.83, 4.80V=337.71 lb/h)"
+      ]
     }
   ],
   "reference_files": [
