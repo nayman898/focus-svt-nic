@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nic's Focus SVT Turbo · Calibration Comparison (SVT Tune vs. v001)</title>
+<title>Nic's Focus SVT Turbo · Calibration Comparison (SVTv29.26 vs. v000 Initial Start)</title>
 <style>
 :root {
   --bg: #0e1724;
@@ -88,17 +88,6 @@ select, input[type=search] {
   color: #fff;
 }
 input[type=search] { width: min(380px, 80vw); }
-button.btn {
-  font: inherit;
-  font-size: 13px;
-  padding: 9px 14px;
-  background: #1a2f47;
-  border: 1px solid #355376;
-  border-radius: 5px;
-  color: #cfe1f5;
-  cursor: pointer;
-}
-button.btn:hover { background: #244163; }
 .grid {
   display: grid;
   grid-template-columns: minmax(320px, 32%) minmax(0, 1fr);
@@ -197,35 +186,34 @@ tr.selected td { background: #1c3652; }
 
 <header>
   <h1>Nic's Focus SVT Turbo · Calibration Comparison</h1>
-  <p>Authentic Ford Focus SVT (Black Oak UJAHAS3 / ZED0) parameters, exact ECM IDs, and cell-by-cell table differences.</p>
+  <p>Authentic Ford Focus SVT (Black Oak UJAHAS3 / ZED0) Parameter Navigator ECM IDs and cell-by-cell targets starting from <code>SVTv29.26.hpt</code>.</p>
   <p>
+    <span class="badge">Base: SVTv29.26.hpt</span>
     <span class="badge">Returnless ERFS (OEM FPDM)</span>
     <span class="badge">Stock 10.2:1 Bottom End</span>
-    <span class="badge">Black Oak UJAHAS3</span>
     <span class="badge">Siemens Deka 60lb</span>
-    <span class="badge">Turbo Safe Baseline</span>
+    <span class="badge">v037 VCT Lockout</span>
   </p>
   <div class="banner">
-    <strong>💡 Calibration Context (v000 SVT Tune vs. v001 Candidate):</strong> Baseline <code>SVT Tune.hpt</code> is Nic's native vehicle read. It is an uncorrupted factory naturally aspirated (NA) calibration featuring genuine returnless ERFS (0–70 psi FRPS, 0.484 vacuum mult), but contains dangerous NA tables for boost (stock 30 lb injectors, 25°–35° spark advance, and -49.5° cam overlap). Candidate <code>v001-SVT-Tune-parent.hpt</code> scales directly to Siemens Deka 60 lb injectors, clamps full boost spark to 10.75°–11.50°, applies the v037 VCT reversion lockout, lowers cooling fan temps to 196°F/205°F, and raises idle target to 950 RPM.
+    <strong>Calibration Context (SVTv29.26.hpt -> v000-initial-start.hpt):</strong> Base <code>SVTv29.26.hpt</code> already contains Siemens Deka 60 lb injector scaling, <code>0.484</code> manifold vacuum multiplier, ERFS FPDM PID, and <code>10.75-11.50 deg</code> boost spark. Target <code>v000</code> fixes the return-style 40 psi FRPS flatline (<code>ECM 7596</code>), 64 F cranking cliff (<code>44519</code>), closed-loop TPS threshold (<code>32731</code>), 2,500 RPM lean pockets (<code>44511</code>), suppressed FRPS/O2 MILs (<code>50</code>), idle/dashpot (<code>44218/44217/47996/32984/32988</code>), boost VCT reversion (<code>44412</code>), and high fan ECTs (<code>24030/24031/24035</code>).
   </div>
 </header>
 
 <main>
   <section class="panel">
     <div class="controls">
-      <label>Compare From (Parent Baseline)
+      <label>Compare From (Source File)
         <select id="from">
-          <option value="v000">v000 · Native NA Baseline (SVT Tune.hpt)</option>
+          <option value="v000">Base · SVTv29.26.hpt (Starting Tune)</option>
         </select>
       </label>
-      <button class="btn" id="swap">⇄ Swap</button>
-      <label>Compare To (Candidate)
+      <label>Compare To (Initial Start Target)
         <select id="to">
-          <option value="v001">v001 · Clean Returnless Boost Candidate (v001-SVT-Tune-parent.hpt)</option>
+          <option value="v001">v000 · Nic's Initial Start Tune (v000-initial-start.hpt)</option>
         </select>
       </label>
       <label>Search Parameters
-        <input id="search" type="search" placeholder="Filter by name, ECM ID, or path...">
+        <input id="search" type="search" placeholder="Filter by ECM ID (e.g. 7596), name, or path...">
       </label>
       <label>View Filter
         <select id="filter">
@@ -252,881 +240,20 @@ tr.selected td { background: #1c3652; }
       </div>
     </section>
 
-    <section class="panel" id="detail-panel">
-      <!-- Dynamic detail content rendered here -->
-    </section>
+    <section class="panel" id="detail-panel"></section>
   </div>
 </main>
 
-<script id="data" type="application/json">
-{
-  "revisions": [
-    {
-      "version": "v000",
-      "name": "Native NA Baseline (SVT Tune.hpt)",
-      "summary": "Vehicle native baseline read. Genuine Ford returnless ERFS (0-70 psi FRPS, 0.484 vacuum mult), but uncalibrated for forced induction (stock 30 lb injectors, 25-35 deg NA spark advance, factory NA cam overlap)."
-    },
-    {
-      "version": "v001",
-      "name": "Clean Returnless Boost Candidate (v001-SVT-Tune-parent.hpt)",
-      "summary": "Derived directly from SVT Tune.hpt: scaled to Siemens Deka 60 lb/hr injectors, clamped full-boost spark to 10.75-11.50 deg ceiling, applied v037 VCT reversion lockout, lowered cooling fans to 196/205 deg F, and raised idle to 950 RPM."
-    }
-  ],
-  "parameters": [
-    {
-      "id": "12011",
-      "name": "Injector Flow Rate High",
-      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate High",
-      "description": "[ECM 12011] Linear high-slope injector mass flow rate. SVT Tune contains factory 30 lb/hr calibration; scaled to Siemens Deka 60 lb/hr rating to prevent severe rich drowning.",
-      "kind": "scalar",
-      "unit": "lb/s",
-      "v000": "0.009670000 (~34.81 lb/hr)",
-      "v001": "0.016700000 (~60.12 lb/hr)"
-    },
-    {
-      "id": "12010",
-      "name": "Injector Flow Rate Low",
-      "path": "Engine / Fuel / General / Injector Control / Injector Flow Rate Low",
-      "description": "[ECM 12010] Low pulsewidth non-linear slope for Siemens Deka 60 lb/hr injectors.",
-      "kind": "scalar",
-      "unit": "lb/s",
-      "v000": "0.010100000 (~36.36 lb/hr)",
-      "v001": "0.017500000 (~63.00 lb/hr)"
-    },
-    {
-      "id": "12012",
-      "name": "Injector Breakpoint",
-      "path": "Engine / Fuel / General / Injector Control / Injector Breakpoint",
-      "description": "[ECM 12012] Fuel mass transition point between low and high injector slopes.",
-      "kind": "scalar",
-      "unit": "lb",
-      "v000": "0.00001800",
-      "v001": "0.00003360"
-    },
-    {
-      "id": "12013",
-      "name": "Injector PW Minimum",
-      "path": "Engine / Fuel / General / Injector Control / Injector PW Minimum",
-      "description": "[ECM 12013] Minimum commanded injector pulsewidth clamp to prevent non-linear mechanical delivery.",
-      "kind": "scalar",
-      "unit": "s",
-      "v000": "0.00000000",
-      "v001": "0.00089100"
-    },
-    {
-      "id": "44583",
-      "name": "Spark Borderline Knock vs. RPM vs. Load",
-      "path": "Engine / Spark / Advance / Borderline / Spark Borderline Knock vs. RPM vs. Load",
-      "description": "[ECM 44583] Knock-limited spark advance map. In SVT Tune, the table tops out at Load 1.00 with aggressive NA timing (25-35 deg BTDC). Candidate v001 rescales the final row to Load 2.00 (positive boost) and clamps advance strictly to 10.75-11.50 deg BTDC to safeguard stock 10.2:1 pistons and powdered-metal rods.",
-      "kind": "table",
-      "axis_label": "Engine Load \\ Engine RPM",
-      "cols": [
-        "1,000",
-        "1,850",
-        "2,450",
-        "2,800",
-        "3,250",
-        "5,000",
-        "5,750",
-        "6,000",
-        "6,250",
-        "6,500",
-        "7,200"
-      ],
-      "rows": [
-        "Load 0.10",
-        "Load 0.20",
-        "Load 0.30",
-        "Load 0.40",
-        "Load 0.50",
-        "Load 0.60",
-        "Load 0.70 (Entering Boost)",
-        "Load 0.80 (Boost)",
-        "Load 1.00 (v000) / Load 2.00 (v001 Boost)"
-      ],
-      "v000_matrix": [
-        [
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00"
-        ],
-        [
-          "41.60",
-          "45.40",
-          "45.00",
-          "45.40",
-          "45.10",
-          "45.00",
-          "44.70",
-          "40.40",
-          "34.70",
-          "45.60",
-          "41.00"
-        ],
-        [
-          "36.00",
-          "45.00",
-          "45.00",
-          "45.00",
-          "41.00",
-          "39.00",
-          "45.11",
-          "45.00",
-          "44.64",
-          "45.17",
-          "36.33"
-        ],
-        [
-          "23.00",
-          "29.00",
-          "39.00",
-          "36.50",
-          "30.00",
-          "32.87",
-          "44.79",
-          "44.52",
-          "44.66",
-          "44.69",
-          "42.80"
-        ],
-        [
-          "12.50",
-          "21.00",
-          "30.00",
-          "28.00",
-          "26.00",
-          "26.99",
-          "33.77",
-          "39.06",
-          "41.72",
-          "42.29",
-          "45.26"
-        ],
-        [
-          "7.68",
-          "19.00",
-          "22.51",
-          "27.00",
-          "22.64",
-          "22.37",
-          "29.16",
-          "32.80",
-          "36.17",
-          "33.00",
-          "36.01"
-        ],
-        [
-          "6.50",
-          "14.00",
-          "21.00",
-          "24.01",
-          "20.50",
-          "26.94",
-          "37.37",
-          "40.03",
-          "40.03",
-          "40.72",
-          "41.33"
-        ],
-        [
-          "-7.00",
-          "2.00",
-          "6.73",
-          "9.28",
-          "9.28",
-          "17.17",
-          "17.06",
-          "16.67",
-          "16.00",
-          "15.44",
-          "13.75"
-        ],
-        [
-          "-7.31",
-          "-9.00",
-          "1.65",
-          "4.14",
-          "8.00",
-          "18.38",
-          "18.17",
-          "17.42",
-          "15.83",
-          "15.50",
-          "13.50"
-        ]
-      ],
-      "v001_matrix": [
-        [
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00",
-          "55.00"
-        ],
-        [
-          "41.60",
-          "45.40",
-          "45.00",
-          "45.40",
-          "45.10",
-          "45.00",
-          "44.70",
-          "40.40",
-          "34.70",
-          "45.60",
-          "41.00"
-        ],
-        [
-          "36.00",
-          "45.00",
-          "45.00",
-          "45.00",
-          "41.00",
-          "39.00",
-          "45.11",
-          "45.00",
-          "44.64",
-          "45.17",
-          "36.33"
-        ],
-        [
-          "23.00",
-          "29.00",
-          "39.00",
-          "36.50",
-          "30.00",
-          "32.87",
-          "44.79",
-          "44.52",
-          "44.66",
-          "44.69",
-          "42.80"
-        ],
-        [
-          "12.50",
-          "21.00",
-          "30.00",
-          "28.00",
-          "26.00",
-          "26.99",
-          "33.77",
-          "39.06",
-          "41.72",
-          "42.29",
-          "45.26"
-        ],
-        [
-          "7.68",
-          "19.00",
-          "22.51",
-          "27.00",
-          "22.64",
-          "22.37",
-          "29.16",
-          "32.80",
-          "36.17",
-          "33.00",
-          "36.01"
-        ],
-        [
-          "6.50",
-          "14.00",
-          "21.00",
-          "24.01",
-          "20.50",
-          "19.39",
-          "24.49",
-          "25.60",
-          "29.48",
-          "27.56",
-          "29.00"
-        ],
-        [
-          "-7.00",
-          "2.00",
-          "6.73",
-          "9.28",
-          "9.28",
-          "12.00",
-          "12.00",
-          "12.00",
-          "12.00",
-          "12.00",
-          "12.00"
-        ],
-        [
-          "-7.31",
-          "-9.00",
-          "1.65",
-          "4.14",
-          "8.00",
-          "11.50",
-          "11.50",
-          "11.50",
-          "11.25",
-          "11.00",
-          "10.75"
-        ]
-      ]
-    },
-    {
-      "id": "44412",
-      "name": "VCT Angle vs. RPM vs. Load",
-      "path": "Engine / Airflow / Variable Camshaft / Configuration / VCT Angle vs. RPM vs. Load",
-      "description": "[ECM 44412] Variable Cam Timing intake phase angle. SVT Tune contains factory naturally aspirated cam advance (-49.5 deg overlap) that creates severe exhaust backpressure reversion under turbo boost. Candidate v001 applies the v037 lockout (flat 0.00 deg advance across 4,500-7,200 RPM and above 3,500 RPM in boost).",
-      "kind": "table",
-      "axis_label": "Engine Load \\ Engine RPM",
-      "cols": [
-        "1,000",
-        "1,500",
-        "2,000",
-        "2,500",
-        "3,500",
-        "4,500",
-        "6,000",
-        "6,250",
-        "6,750",
-        "7,000",
-        "7,200"
-      ],
-      "rows": [
-        "Load 0.10",
-        "Load 0.20",
-        "Load 0.30",
-        "Load 0.40",
-        "Load 0.50",
-        "Load 0.60 (Spool)",
-        "Load 0.70 (Boost)",
-        "Load 0.80 (Boost)",
-        "Load 1.00 (Boost)"
-      ],
-      "v000_matrix": [
-        [
-          "0.00",
-          "-10.00",
-          "-15.00",
-          "-20.00",
-          "-15.00",
-          "-15.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-22.00",
-          "-30.00",
-          "-39.60",
-          "-35.00",
-          "-34.00",
-          "0.00",
-          "0.00",
-          "5.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-25.00",
-          "-34.80",
-          "-42.00",
-          "-42.00",
-          "-31.60",
-          "-5.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-26.00",
-          "-35.10",
-          "-45.00",
-          "-49.50",
-          "-49.50",
-          "-10.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-28.00",
-          "-33.50",
-          "-45.00",
-          "-49.50",
-          "-49.50",
-          "-15.00",
-          "-5.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-26.50",
-          "-28.50",
-          "-45.00",
-          "-49.50",
-          "-49.50",
-          "-15.00",
-          "-5.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-25.00",
-          "-30.00",
-          "-20.00",
-          "-25.00",
-          "-45.00",
-          "-40.00",
-          "-32.00",
-          "-25.00",
-          "-20.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-25.00",
-          "-28.00",
-          "-18.00",
-          "-25.00",
-          "-45.00",
-          "-40.00",
-          "-35.00",
-          "-25.00",
-          "-20.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-20.00",
-          "-25.00",
-          "-15.00",
-          "-25.00",
-          "-40.00",
-          "-40.00",
-          "-35.00",
-          "-25.00",
-          "-20.00"
-        ]
-      ],
-      "v001_matrix": [
-        [
-          "0.00",
-          "-10.00",
-          "-15.00",
-          "-20.00",
-          "-15.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-20.00",
-          "-25.00",
-          "-20.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-20.00",
-          "-25.00",
-          "-30.00",
-          "-25.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-20.00",
-          "-30.00",
-          "-35.00",
-          "-25.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-20.00",
-          "-30.00",
-          "-35.00",
-          "-20.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-25.00",
-          "-30.00",
-          "-20.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-25.00",
-          "-30.00",
-          "-20.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-25.00",
-          "-28.00",
-          "-18.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ],
-        [
-          "-10.00",
-          "-15.00",
-          "-20.00",
-          "-25.00",
-          "-15.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00",
-          "0.00"
-        ]
-      ]
-    },
-    {
-      "id": "7596",
-      "name": "Fuel Pressure Sensor Transfer Function",
-      "path": "Fuel System / General / Fuel Pressure Sensor / Fuel Pressure Sensor Transfer Function",
-      "description": "[ECM 7596] Primary Fuel Rail Pressure Sensor (FRPS) transfer curve. Both SVT Tune and v001 use the genuine factory Ford 0-70 psi transfer function for closed-loop pump authority.",
-      "kind": "table",
-      "axis_label": "A/D Counts (Volts) \\ Parameter",
-      "cols": [
-        "Fuel Pressure (psi)"
-      ],
-      "rows": [
-        "0 Counts (0.00 V)",
-        "102 Counts (0.50 V)",
-        "307 Counts (1.50 V)",
-        "512 Counts (2.50 V)",
-        "716 Counts (3.50 V)",
-        "921 Counts (4.50 V)",
-        "1023 Counts (5.00 V)"
-      ],
-      "v000_matrix": [
-        [
-          "0.00"
-        ],
-        [
-          "0.00"
-        ],
-        [
-          "17.50"
-        ],
-        [
-          "35.00"
-        ],
-        [
-          "52.50"
-        ],
-        [
-          "70.00"
-        ],
-        [
-          "78.70"
-        ]
-      ],
-      "v001_matrix": [
-        [
-          "0.00"
-        ],
-        [
-          "0.00"
-        ],
-        [
-          "17.50"
-        ],
-        [
-          "35.00"
-        ],
-        [
-          "52.50"
-        ],
-        [
-          "70.00"
-        ],
-        [
-          "78.70"
-        ]
-      ]
-    },
-    {
-      "id": "6950",
-      "name": "Manifold Vacuum Multiplier",
-      "path": "Engine / Airflow / General / General / Manifold Vacuum Multiplier",
-      "description": "[ECM 6950] Scales manifold inHg to PSI for injector Delta-P modeling: Delta-P = P_rail - (P_vac * 0.484). Both files have genuine factory 0.484 returnless value.",
-      "kind": "scalar",
-      "unit": "multiplier",
-      "v000": "0.484",
-      "v001": "0.484"
-    },
-    {
-      "id": "43000",
-      "name": "Desired Fuel Pressure Over Injector",
-      "path": "Fuel System / Fuel Pump / Desired Pressure / Desired Fuel Pressure Over Injector",
-      "description": "[ECM 43000] Closed-loop target differential pressure across injector tips across all operating rows.",
-      "kind": "scalar",
-      "unit": "psi",
-      "v000": "39.15",
-      "v001": "39.15"
-    },
-    {
-      "id": "44218",
-      "name": "Target Idle Speed Park/Neutral",
-      "path": "Engine / Idle / RPM / Transmission Based Setpoint / Target Idle Speed Park/Neutral",
-      "description": "[ECM 44218] Disengaged idle target. Raised from 850 RPM to 950 RPM to prevent stall and eliminate gear chatter caused by Nic's aftermarket lightweight single-mass flywheel.",
-      "kind": "scalar",
-      "unit": "RPM",
-      "v000": "850.0",
-      "v001": "950.0"
-    },
-    {
-      "id": "44217",
-      "name": "Target Idle Speed Drive",
-      "path": "Engine / Idle / RPM / Transmission Based Setpoint / Target Idle Speed Drive",
-      "description": "[ECM 44217] Engaged idle target. Raised from 850 RPM to 950 RPM to provide sufficient torque reserve when electric cooling fans engage.",
-      "kind": "scalar",
-      "unit": "RPM",
-      "v000": "850.0",
-      "v001": "950.0"
-    },
-    {
-      "id": "FAN_LOW",
-      "name": "Cooling Fan Low Speed Enable ECT",
-      "path": "System / Fans / Control By ECT / Low Speed ECT",
-      "description": "[System Fans] Coolant temperature threshold for Low Speed fan activation. Lowered from factory 216\u00b0F to 196\u00b0F to evacuate turbo heat soak before it accumulates.",
-      "kind": "scalar",
-      "unit": "\u00b0F",
-      "v000": "216.0",
-      "v001": "196.0"
-    },
-    {
-      "id": "FAN_HIGH",
-      "name": "Cooling Fan High Speed Enable ECT",
-      "path": "System / Fans / Control By ECT / High Speed ECT",
-      "description": "[System Fans] Coolant temperature threshold for High Speed fan activation. Lowered from factory 228\u00b0F to 205\u00b0F to ensure high air velocity across radiator under boost load.",
-      "kind": "scalar",
-      "unit": "\u00b0F",
-      "v000": "228.0",
-      "v001": "205.0"
-    },
-    {
-      "id": "12163",
-      "name": "MAF Airflow vs. Voltage (Diablo MAFia)",
-      "path": "Engine / Airflow / General / MAF Calibration / MAF Airflow vs. Voltage",
-      "description": "[ECM 12163] Primary MAF transfer curve for OEM SVT sensor in 2.75-inch draw-through intake tube with DiabloSport MAFia interface.",
-      "kind": "maf",
-      "v000_curve": [
-        {
-          "v": "0.380",
-          "flow": "0.270"
-        },
-        {
-          "v": "0.500",
-          "flow": "0.420"
-        },
-        {
-          "v": "0.600",
-          "flow": "0.630"
-        },
-        {
-          "v": "0.700",
-          "flow": "0.875"
-        },
-        {
-          "v": "0.900",
-          "flow": "1.475"
-        },
-        {
-          "v": "1.000",
-          "flow": "1.856"
-        },
-        {
-          "v": "1.200",
-          "flow": "2.717"
-        },
-        {
-          "v": "1.500",
-          "flow": "4.450"
-        },
-        {
-          "v": "2.000",
-          "flow": "8.650"
-        },
-        {
-          "v": "2.500",
-          "flow": "14.800"
-        },
-        {
-          "v": "3.000",
-          "flow": "23.400"
-        },
-        {
-          "v": "3.500",
-          "flow": "34.900"
-        },
-        {
-          "v": "4.000",
-          "flow": "49.500"
-        },
-        {
-          "v": "4.500",
-          "flow": "67.800"
-        },
-        {
-          "v": "4.900",
-          "flow": "86.500"
-        }
-      ],
-      "v001_curve": [
-        {
-          "v": "0.380",
-          "flow": "0.270"
-        },
-        {
-          "v": "0.500",
-          "flow": "0.420"
-        },
-        {
-          "v": "0.600",
-          "flow": "0.630"
-        },
-        {
-          "v": "0.700",
-          "flow": "0.875"
-        },
-        {
-          "v": "0.900",
-          "flow": "1.475"
-        },
-        {
-          "v": "1.000",
-          "flow": "1.856"
-        },
-        {
-          "v": "1.200",
-          "flow": "2.717"
-        },
-        {
-          "v": "1.500",
-          "flow": "4.450"
-        },
-        {
-          "v": "2.000",
-          "flow": "8.650"
-        },
-        {
-          "v": "2.500",
-          "flow": "14.800"
-        },
-        {
-          "v": "3.000",
-          "flow": "23.400"
-        },
-        {
-          "v": "3.500",
-          "flow": "34.900"
-        },
-        {
-          "v": "4.000",
-          "flow": "49.500"
-        },
-        {
-          "v": "4.500",
-          "flow": "67.800"
-        },
-        {
-          "v": "4.900",
-          "flow": "86.500"
-        }
-      ]
-    }
-  ]
-}
-</script>
-
+<script src="compare-data.js"></script>
 <script>
 'use strict';
-const D = JSON.parse(document.getElementById('data').textContent);
-let selectedId = "12011"; // Default to FRPS sensor transfer function
+const D = window.COMPARE_DATA;
+let selectedId = "7596";
 
 function differs(p) {
   if (p.kind === 'scalar') return p.v000 !== p.v001;
-  if (p.kind === 'maf') {
-    return JSON.stringify(p.v000_curve) !== JSON.stringify(p.v001_curve);
-  }
-  if (p.kind === 'table') {
-    return JSON.stringify(p.v000_matrix) !== JSON.stringify(p.v001_matrix);
-  }
+  if (p.kind === 'maf') return JSON.stringify(p.v000_curve) !== JSON.stringify(p.v001_curve);
+  if (p.kind === 'table') return JSON.stringify(p.v000_matrix) !== JSON.stringify(p.v001_matrix);
   return false;
 }
 
@@ -1134,7 +261,7 @@ function renderList() {
   const q = document.getElementById('search').value.toLowerCase().trim();
   const filter = document.getElementById('filter').value;
   const listEl = document.getElementById('param-list');
-  
+
   const filtered = D.parameters.filter(p => {
     const text = (p.name + ' ' + p.id + ' ' + p.path + ' ' + p.description).toLowerCase();
     const matchesQ = text.includes(q);
@@ -1158,7 +285,7 @@ function renderList() {
           <small>ECM ${p.id} · ${p.path}</small>
         </button>
       </td>
-      <td><span style="font-size:11px; font-weight:600; color:${isChanged ? '#f5a623' : '#71869d'}">${isChanged ? 'Changed' : 'Same'}</span></td>
+      <td><span style="font-size:11px; font-weight:600; color:${isChanged ? '#f5a623' : '#71869d'}">${isChanged ? 'Changed' : 'Verify/Keep'}</span></td>
     `;
     tr.querySelector('button').onclick = () => {
       selectedId = p.id;
@@ -1173,15 +300,15 @@ function renderDetail() {
   const p = D.parameters.find(x => x.id === selectedId) || D.parameters[0];
   const container = document.getElementById('detail-panel');
   const isChanged = differs(p);
-  
+
   let html = `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
       <div>
         <h2 style="margin:0 0 4px; font-size:20px;">${p.name}</h2>
-        <div style="color:var(--text-muted); font-size:13px;">ECM ID: <strong>${p.id}</strong> · ${p.path}</div>
+        <div style="color:var(--text-muted); font-size:13px;">Search Parameter Navigator: <strong>ECM ${p.id}</strong> · ${p.path}</div>
       </div>
       <span class="badge" style="background:${isChanged ? '#3d2b12; color:#f5a623;' : '#13293d; color:var(--accent);'}">
-        ${isChanged ? 'MODIFIED IN V001' : 'IDENTICAL'}
+        ${isChanged ? 'MUST CHANGE IN V000' : 'VERIFY & KEEP'}
       </span>
     </div>
     <p style="color:#b2c5d9; font-size:14px; margin-top:0;">${p.description}</p>
@@ -1191,41 +318,42 @@ function renderDetail() {
     html += `
       <div class="cards">
         <div class="card">
-          <h4>v000 · Native NA Baseline (SVT Tune.hpt)</h4>
-          <div class="val" style="${isChanged ? 'color:var(--del-text)' : ''}">${p.v000} ${p.unit||''}</div>
+          <h4>SVTv29.26.hpt (Current)</h4>
+          <div class="val" style="${isChanged ? 'color:var(--del-text)' : ''}">${p.v000} ${p.unit || ''}</div>
         </div>
         <div class="card">
-          <h4>v001 · Clean Boost Candidate (v001-SVT-Tune-parent)</h4>
-          <div class="val" style="${isChanged ? 'color:var(--ins-text)' : ''}">${p.v001} ${p.unit||''}</div>
+          <h4>v000 Initial Start (Set To)</h4>
+          <div class="val" style="${isChanged ? 'color:var(--ins-text)' : ''}">${p.v001} ${p.unit || ''}</div>
         </div>
       </div>
     `;
   } else if (p.kind === 'maf') {
     html += `
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-        Ford 30-Point Airflow Curve comparison across voltages (Airflow in lb/min).
+        Actual 30-point MAF curve in SVTv29.26.hpt (Editor UI display units; confirm MAFia dial & warm idle STFT before editing).
       </p>
       <div class="scroll">
         <table>
           <thead>
             <tr>
               <th>Sensor Volts</th>
-              <th>v000 (Native SVT Tune)</th>
-              <th>v001 (Clean Boost Candidate)</th>
-              <th>Percent Delta</th>
+              <th>SVTv29.26 (Current)</th>
+              <th>v000 Initial Start (Keep)</th>
+              <th>Delta</th>
             </tr>
           </thead>
           <tbody>
     `;
     p.v000_curve.forEach((pt, i) => {
       const v1 = p.v001_curve[i];
-      const diff = ((parseFloat(v1.flow) / parseFloat(pt.flow) - 1) * 100).toFixed(1);
+      const f0 = parseFloat(pt.flow);
+      const diff = f0 > 0 ? (((parseFloat(v1.flow) / f0) - 1) * 100).toFixed(1) : '0.0';
       html += `
         <tr>
           <td><strong>${pt.v} V</strong></td>
-          <td style="color:#b5c4d4;">${pt.flow} lb/min</td>
-          <td style="color:var(--ins-text); font-weight:600;">${v1.flow} lb/min</td>
-          <td style="color:${diff != 0 ? (diff > 0 ? '#4ce6a1' : '#ff858d') : '#8b9fb5'}">${diff > 0 ? '+' : ''}${diff}%</td>
+          <td style="color:#b5c4d4;">${pt.flow}</td>
+          <td style="color:var(--ins-text); font-weight:600;">${v1.flow}</td>
+          <td style="color:${diff != 0 ? '#f5a623' : '#8b9fb5'}">${diff > 0 ? '+' : ''}${diff}%</td>
         </tr>
       `;
     });
@@ -1233,7 +361,7 @@ function renderDetail() {
   } else if (p.kind === 'table') {
     html += `
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-        Cell comparison: <span style="color:var(--del-text); text-decoration:line-through;">v000 Native NA Baseline</span> → <span style="color:var(--ins-text); font-weight:bold;">v001 Clean Boost Candidate</span>.
+        Cell comparison: <span style="color:var(--del-text); text-decoration:line-through;">SVTv29.26.hpt</span> -> <span style="color:var(--ins-text); font-weight:bold;">v000 Initial Start Target</span>.
       </p>
       <div class="scroll">
         <table class="matrix">
@@ -1267,10 +395,6 @@ function renderDetail() {
 
 document.getElementById('search').oninput = renderList;
 document.getElementById('filter').onchange = renderList;
-document.getElementById('swap').onclick = () => {
-  alert('Comparing Parent (v000 SVTv29.26) against Candidate (v001 Clean Boost Candidate).');
-};
-
 renderList();
 renderDetail();
 </script>

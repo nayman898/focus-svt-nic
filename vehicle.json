@@ -5,22 +5,25 @@
   "model_year": 2003,
   "vin": null,
   "ecu_strategy": "ZED0 / UJAHAS3",
-  "calibration_target": "Safe Forced Induction Calibration on Returnless ERFS",
-  "current_tune_file": "v001-SVT-Tune-parent.hpt",
-  "installed_tune": "v001",
-  "production_baseline": "v001",
+  "calibration_target": "Initial Start & Returnless ERFS Calibration (v000)",
+  "base_tune_file": "SVTv29.26.hpt",
+  "current_tune_file": "SVTv29.26.hpt",
+  "target_build_file": "v000-initial-start.hpt",
+  "installed_tune": "pending v000-initial-start.hpt build from SVTv29.26.hpt",
+  "production_baseline": "v000",
   "fuel_system": {
     "type": "Electronic Returnless Fuel System (ERFS)",
     "fpdm_status": "OEM Fuel Pump Driver Module active",
     "pump": "Stock SVT Focus in-tank pump (~190 LPH)",
-    "target_differential_pressure_psi": 39.15,
+    "target_differential_pressure_psi": 40.0,
     "frps_model": "OEM Ford Fuel Rail Pressure Sensor",
     "frps_transfer_linear_psi": {
-      "0.5v": 0.0,
-      "4.5v": 70.0
+      "102_counts_0.5v": 0.0,
+      "921_counts_4.5v": 70.0,
+      "1023_counts_5.0v": 78.72
     },
     "manifold_vacuum_multiplier_ecm6950": 0.484,
-    "pressure_compensation_multipliers": "Enabled and dynamic (do not flatten)"
+    "pressure_compensation_multipliers": "Enabled and dynamic (ECM 32047 Enabled, ECM 45693 Disabled, ECM 45694 Enabled)"
   },
   "forced_induction": {
     "type": "Turbocharger",
@@ -32,7 +35,7 @@
   "engine": {
     "displacement_l": 2.0,
     "internals": "Stock SVT (10.2:1 static compression, stock powdered-metal rods)",
-    "cams_vct": "Stock SVT Head with working VCT intake cam (v037 lockout active)",
+    "cams_vct": "Stock SVT Head with working VCT intake cam (target v037 lockout active above 4,500 RPM via ECM 44412)",
     "spark_plugs": {
       "brand": "NGK",
       "heat_range": "2-step colder",
@@ -43,21 +46,24 @@
     "brand": "Siemens Deka",
     "rated_flow_lb_hr": 60.0,
     "impedance": "High",
-    "high_slope_lb_s": 0.016700,
-    "low_slope_lb_s": 0.017500,
-    "breakpoint_lb": 0.00003360,
-    "min_pulse_width_s": 0.000891
+    "high_slope_lb_s": 0.0167,
+    "low_slope_lb_s": 0.0175,
+    "breakpoint_lb": 0.0000336,
+    "min_pulse_width_s": 0.0005,
+    "pressure_drop_ref_psi": 40.0
   },
   "maf": {
     "type": "OEM Sensor + DiabloSport MAFia interface",
     "housing_diameter_inches": 2.75,
     "location": "Draw-Through (before turbo inlet)",
-    "transfer_function_status": "Draw-through curve pending MAFia dial verification"
+    "transfer_function_status": "Retain SVTv29.26.hpt ECM 12163 (0.00-4.80 V) pending MAFia dial verification & first warm-idle STFT log"
   },
   "operational_limits": {
     "max_fpdm_duty_cycle_pct": 45.0,
-    "max_boost_lambda": 0.80,
-    "max_ect_f": 215,
+    "max_boost_lambda": 0.8,
+    "max_ect_f": 220,
+    "max_knock_retard_deg": 2.0,
+    "max_initial_boost_psi": 8.0,
     "target_warm_idle_rpm": 950
   }
 }

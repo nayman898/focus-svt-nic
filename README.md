@@ -1,55 +1,50 @@
-# Nic's Boosted SVT Focus Tuning Repository
+# Nic's 2003 Focus SVT Turbo — Returnless Tuning Repository
 
-Calibration tracking, datalog analysis, diagnostic reviews, and VCM Scanner profiles for **Nic's boosted 2004 Ford Focus SVT**, operating on Ford's factory **Electronic Returnless Fuel System (ERFS)**.
+**Base Tune:** [`tunes/SVTv29.26.hpt`](tunes/SVTv29.26.hpt) (`212,349` bytes, `UJAHAS3 / ZED0`)  
+**Initial Start Tune (`v000`):** Nic writes `tunes/v000-initial-start.hpt` himself in **HP Tuners VCM Editor** from [`SVTv29.26.hpt`](tunes/SVTv29.26.hpt) using exact **Parameter Navigator `ECM` numbers**.
 
----
-
-## 🚀 Getting Started & Immediate Next Steps
-
-> **👉 [Click Here for Nic's Immediate Next Steps Guide](docs/next-steps.md)**  
-> Review the 4-step checklist covering tune confirmation, hardware safety checks, BOV routing, and the first baseline idle log.
-
-1. **Hardware Info:** Completed in **[VEHICLE_INFO.md](VEHICLE_INFO.md)**.
-2. **Next Steps Checklist:** See **[docs/next-steps.md](docs/next-steps.md)** for immediate under-the-hood checks.
-3. **Interactive Calibration Diff Preview:** Open **[docs/index.html](docs/index.html)** (or view the [Live Web Demo](https://htmlpreview.github.io/?https://github.com/nayman898/focus-svt-nic/blob/main/docs/index.html)).
-4. **First Idle Log:** Follow **[docs/first-connection.md](docs/first-connection.md)** to capture the baseline.
+> [!IMPORTANT]
+> Start from **`tunes/SVTv29.26.hpt`**, NOT `tunes/SVT Tune.hpt` (factory 30 lb NA read).  
+> Never edit `SVTv29.26.hpt` in place — always **`File -> Save As...`** `tunes/v000-initial-start.hpt` first.
 
 ---
 
-## ⚙️ Calibration Architecture: Returnless (ERFS)
+## Start Here — Fresh `v000` Initial Start README
 
-Unlike mechanical return-style systems with 1:1 regulators, this calibration relies on Ford's factory Electronic Returnless architecture:
-* **Dynamic Delta-P Modeling:**
-  * `ECM 6950` (Manifold Vacuum Multiplier) is preserved at `0.484`.
-  * Pressure Compensation Multipliers (`ECM 32060`, `32062`, `32064`, `32052`) remain dynamic active curves to compensate for rail pressure fluctuations during throttle transitions.
-* **FPDM Pump Control:**
-  * The ECU actively commands the Fuel Pump Driver Module via closed-loop PID.
-  * Commanded pump duty cycle is monitored closely (48% indicates pump saturation).
-* **Thermal Monitoring (IAT):**
-  * Post-compressor / intercooler charge temperature is tracked via PID 2127 (1.0s interval) to protect against heat soak and spark detonation.
+- **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).
+
+### Modular Navigator Reference Guides
+1. **[Master Build & Navigator Guide](docs/NIC_TUNE_BUILD_README.md)** — Hardware pre-flight, VCM Editor units, Navigator workflow, Compare check & abort thresholds.
+2. **[01 — Returnless Fuel, Closed Loop & DTCs](docs/01-FUEL-ERFS-AND-DTC-README.md)** — Detailed walkthrough for `ECM 7596`, `ECM 44519`, `ECM 32731`, `ECM 44511`, and `ECM 50`.
+3. **[02 — VCT Lockout, Idle/Dashpot & Cooling Fans](docs/02-VCT-IDLE-AND-FANS-README.md)** — Detailed walkthrough for `ECM 44412`, `44218`, `44217`, `47996`, `32984`, `32988`, `24030`, `24031`, `24035`.
+4. **[03 — Verify & Keep Checklist](docs/03-VERIFY-AND-KEEP-CHECKLIST-README.md)** — Existing `SVTv29.26.hpt` values (`6950 = 0.484`, Deka 60s, FPDM PID, `10.75°–11.50°` boost spark, `12163` MAF curve) to confirm intact and **never overwrite**.
 
 ---
 
-## 📁 Repository Layout
+## Quick `v000` ECM Number Cheat Sheet (`SVTv29.26.hpt` -> `v000-initial-start.hpt`)
 
-* **`VEHICLE_INFO.md`**: Hardware checklist and vehicle configuration.
-* **`vehicle.json`**: Machine-readable specification parsed by tuning scripts.
-* **`AGENTS.md`**: Strict safety rules, stop conditions, and tuning procedures.
-* **`backups/`**: Permanent repository for the untouched factory ECU read.
-* **`tunes/`**: Versioned calibration files (`v001`, `v002`, etc.) and `revisions.json` catalog.
-* **`profiles/`**: Ready-to-use VCM Scanner channel profiles with returnless PIDs.
-* **`logs/`**: Raw `.hpl` datalogs and exported `.csv` files.
-* **`reports/`**: Detailed telemetry reviews, wideband tracking, and pull comparisons.
-* **`docs/`**: Setup guides, testing roadmaps, and run cards.
-* **`tools/`**: Analysis utilities and log processors.
+| Search ECM ID | Parameter Name | Current (`SVTv29.26`) | Set `v000` To |
+| :---: | :--- | :---: | :---: |
+| **`7596`** | `Fuel Pressure Sensor Transfer Function` | All `40` psi | `0, 0, 0, 0, 0.00, 70.00, 78.72` psi |
+| **`44519`** | `Fuel Cranking vs. ECT` | `64–150°F`: `0.335–0.764` | `0.930, 0.950, 0.970, 0.985` lambda |
+| **`32731`** | `Open Loop Fuel TPS Thresh vs. RPM` | `0.00` across all RPM | `200, 200, 350, 350, 0, 0, 0` |
+| **`44511`** | `Fuel Base vs. RPM vs. TPS` | `2,500 RPM @ 15.6/19.5%`: `1.07 / 1.14` | `1.00 / 1.00` lambda |
+| **`50`** | `Master DTC List` (`P0190/P0192/P0193/P0132`) | Disabled / No MIL | `MIL Light` |
+| **`44412`** | `VCT Angle vs. RPM vs. Load` | `-49.5°` boost / active at 6k | `v037` table (`0.00°` across `4,500–7,200`) |
+| **`44218` / `44217`** | `Target Idle Speed` (`P/N` & `Drive`) | `850` RPM | `950` RPM |
+| **`47996`** | `Idle Spark Proportional Gain` | `2.000` | `1.000` |
+| **`32984`** | `Idle Dashpot Decay vs. Dashpot Airflow` | `0.0–0.6 lb/min`: `0.00` | `0.02, 0.03, 0.04, 0.05` |
+| **`32988`** | `Idle Dashpot Pre-Position vs. RPM` | `2150/3150/4150`: `0.78/1.11/1.50` | `0.55 / 0.80 / 1.00` |
+| **`24030` / `24031` / `24035`** | `Fan High Speed` ECT thresholds | `225 / 215 / 235°F` | `205.0 / 199.0 / 205.0°F` |
 
 ---
 
-## 🛡️ Safety & Rules of Engagement
+## Reference & Tooling Docs
 
-* **The owner performs all ECU writes.** No tune is flashed without a confirmed parent revision and an immediate rollback file.
-* **Stop Conditions:** Any run is immediately aborted if:
-  * Fuel Pump Duty Cycle exceeds **45%** or rail pressure collapses under boost.
-  * Wideband lambda exceeds **0.80** (AFR $> 11.8$) under boost $> 3$ psi.
-  * Verified knock retard exceeds **$2.0^\circ$**.
-  * Coolant temp exceeds **$220^\circ\text{F}$**.
+- **[Hardware & Build Profile](VEHICLE_INFO.md)** — Stock 10.2:1 Focus SVT bottom end, SPA .64 turbo, ERFS, Deka 60 lb injectors, MAFia setup.
+- **[Tuning Priorities & Safety Boundaries](TUNING_PRIORITIES.md)** — Phased tuning progression and hard abort thresholds.
+- **[SVTv29.26 Deep Calibration Reference](docs/SVTv29.26_CALIBRATION_REFERENCE.md)** — Verified table/scalar dump of `tunes/SVTv29.26.hpt`.
+- **[First Connection Guide](docs/first-connection.md)** & **[Next Steps](docs/next-steps.md)** — Pull untouched backup, setup Scanner channels, warm idle validation.
+- **[Visual Diff Viewer (`docs/index.html`)](docs/index.html)** — Browser compare page (`SVTv29.26.hpt` vs `v000-initial-start.hpt`).
+- **[VCM Scanner Profile](profiles/Focus_SVT_Returnless_Boost.Channels.xml)** — Channel layout including FRP, FPDM Duty Cycle, STFT, O2, Spark, KR, and MAF.
+- **Privacy Check:** Run `python tools/verify-privacy.py --all` before committing any logs or docs.

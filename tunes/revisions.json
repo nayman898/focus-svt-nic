@@ -1,38 +1,56 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "repository": "nayman898/focus-svt-nic",
-  "installed_production_baseline": "v001",
+  "base_source_tune": "SVTv29.26.hpt",
+  "initial_start_target": "v000-initial-start.hpt",
   "revisions": [
     {
-      "revision": "v000",
-      "filename": "SVT Tune.hpt",
-      "sha256": "E21BAC258B66BE02A6D56BEEDA483E54BA4DE7491B1BDE8D4480EB890885207B",
-      "bytes": 214909,
+      "revision": "base",
+      "filename": "SVTv29.26.hpt",
+      "sha256": "45F07925F65D03FB08B91D8B9BB88BD8E29DBC4E4AF48170472DBCDB5B0F63E0",
+      "bytes": 212349,
       "parent": null,
       "rollback": null,
-      "status": "Native vehicle baseline read; clean factory naturally aspirated architecture with returnless ERFS",
-      "summary": "Native baseline read from Nic's vehicle environment. Features genuine returnless ERFS (0-70 psi FRPS, 0.484 vacuum mult), but lacks forced induction calibration (stock 30 lb injectors, 25-35 deg NA spark advance, factory NA cam overlap).",
+      "status": "Starting source calibration (unchanged)",
+      "summary": "Chuck v29.26 base calibration (UJAHAS3 / ZED0). Already holds Siemens Deka 60 lb injector data (ECM 12011/10/12/15/32050), 0.484 manifold vacuum multiplier (ECM 6950), ERFS pump PID, 520 F CL temp (ECM 12115), 195/190 F low fan, and 10.75-11.50 deg boost spark (ECM 44583). Needs returnless FRPS, OL TPS threshold, cranking, base fuel, DTCs, VCT, idle/dashpot, and high-fan fixes for initial start.",
       "parameter_changes": []
     },
     {
-      "revision": "v001",
-      "filename": "v001-SVT-Tune-parent.hpt",
-      "sha256": "5F6096E1778B81F8019ECC8218B7FF13F86DBB3533E506349101B85BD9163731",
-      "bytes": 215757,
-      "parent": "v000",
-      "rollback": "SVT Tune.hpt",
-      "status": "Official clean candidate ready for pre-flash review and first idle datalog",
-      "summary": "Clean forced induction baseline derived directly from SVT Tune.hpt: scaled to Siemens Deka 60 lb/hr injectors (ECM 12011/10/12/13), expanded and clamped spark timing to safe 11.0°-11.5° ceiling on Load 2.00 (ECM 44583), applied v037 VCT reversion lockout (ECM 44412), lowered cooling fan triggers to 196°F/205°F, and raised idle target to 950 RPM (ECM 44218/17) while preserving 100% of factory returnless ERFS architecture.",
+      "revision": "v000",
+      "filename": "v000-initial-start.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "SVTv29.26.hpt",
+      "rollback": "SVTv29.26.hpt",
+      "status": "Pending manual VCM Editor build by Nic using tunes/v000-initial-start-README.md",
+      "summary": "Nic's initial startup and stationary idle tune built from SVTv29.26.hpt using Parameter Navigator ECM numbers.",
       "parameter_changes": [
-        "ECM 12011 (Injector Flow Rate High: 0.009670 -> 0.016700 lb/s [60.1 lb/hr])",
-        "ECM 12010 (Injector Flow Rate Low: 0.010100 -> 0.017500 lb/s [63.0 lb/hr])",
-        "ECM 12012 (Injector Breakpoint: 0.00001800 -> 0.00003360 lb)",
-        "ECM 12013 (Injector PW Minimum: 0.00000000 -> 0.00089100 s)",
-        "ECM 44583 (Spark Borderline Knock: Load 2.00 boost ceiling clamped to 10.75°-11.50° BTDC)",
-        "ECM 44412 (VCT Angle vs. RPM vs. Load: applied v037 reversion lockout flat 0.00° across 4,500-7,200 RPM and in boost >3,500 RPM)",
-        "System Fans (Fan Low Speed: 216.0 -> 196.0°F / Fan High Speed: 228.0 -> 205.0°F)",
-        "ECM 44218/17 (Target Idle Speed: 850 -> 950 RPM)"
+        "ECM 7596 (Fuel Pressure Sensor Transfer Function: all 40 psi -> 0.00, 0.00, 0.00, 0.00, 0.00, 70.00, 78.72 psi across 0..1,023 AD counts)",
+        "ECM 44519 (Fuel Cranking vs. ECT: 64/90/120/150 F 0.335/0.430/0.647/0.764 -> monotonic 0.930/0.950/0.970/0.985 lambda)",
+        "ECM 32731 (Open Loop Fuel TPS Thresh vs. RPM: 0.00 all rows -> 200.00 @ 0/1,500 RPM, 350.00 @ 2,000/2,500 RPM; keep 0.00 >= 5,500 RPM)",
+        "ECM 44511 (Fuel Base vs. RPM vs. TPS: 2,500 RPM @ 15.6%/19.5% 1.07/1.14 -> 1.00 lambda)",
+        "ECM 50 (Master DTC List: P0190, P0192, P0193, P0132 -> MIL Light)",
+        "ECM 44412 (VCT Angle vs. RPM vs. Load: apply v037 9x11 matrix, 0.00 deg across 4,500-7,200 RPM)",
+        "ECM 44218 & 44217 (Target Idle Speed P/N & Drive: 850 -> 950 RPM)",
+        "ECM 47996 (Idle Spark Proportional Gain: 2.000 -> 1.000)",
+        "ECM 32984 (Idle Dashpot Decay: 0.0-0.6 lb/min 0.00 -> 0.02, 0.03, 0.04, 0.05)",
+        "ECM 32988 (Idle Dashpot Pre-Position: 2,150/3,150/4,150 RPM 0.78/1.11/1.50 -> 0.55/0.80/1.00)",
+        "ECM 24030/24031/24035 (High Fan Enable/Disable/High-Load: 225/215/235 -> 205.0/199.0/205.0 F)"
       ]
+    }
+  ],
+  "reference_files": [
+    {
+      "filename": "Current Tune.hpt",
+      "sha256": "0ECED84278E82611A14023442BBBB9EA9DE7F405703151B350715CB7BE3550EB",
+      "bytes": 214941,
+      "note": "Uploaded 2026-11-10 by Nikalus20; archived reference"
+    },
+    {
+      "filename": "SVT Tune.hpt",
+      "sha256": "E21BAC258B66BE02A6D56BEEDA483E54BA4DE7491B1BDE8D4480EB890885207B",
+      "bytes": 214909,
+      "note": "Stock 30 lb naturally aspirated factory read; NOT Nic's base tune"
     }
   ]
 }

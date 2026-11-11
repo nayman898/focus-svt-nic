@@ -1,195 +1,90 @@
-# SVTv29.26 Calibration Deep-Dive & Baseline Reference Sheet
+# SVTv29.26.hpt — Verified Calibration Reference Sheet
 
-> **Origin:** Tuner Archive ("Chuck" / SVTv29.xx series)  
-> **Source Binary:** `tunes/SVTv29.26.hpt` (Identical SHA-256 to `svt-focus-tuning/tunes/Old tunes/SVTv29.26.hpt`)  
-> **Strategy / Hardware:** Ford Black Oak EEC-V, Strategy `ZED0` / `UJAHAS3`  
-> **Target Application:** Forced Induction Ford Focus SVT 2.0L
+- **File:** [`tunes/SVTv29.26.hpt`](../tunes/SVTv29.26.hpt) (`212,349` bytes, SHA-256 `45F07925F65D03FB08B91D8B9BB88BD8E29DBC4E4AF48170472DBCDB5B0F63E0`)
+- **Strategy / Controller:** `UJAHAS3 / ZED0` (2003 Ford Focus SVT, Black Oak EEC-V)
+- **Status:** Nic's active starting base tune for manual `v000` VCM Editor build ([`tunes/v000-initial-start-README.md`](../tunes/v000-initial-start-README.md)).
 
----
-
-## 1. Executive Summary & Calibration Profile
-
-`SVTv29.26.hpt` represents the 26th iterative calibration from the previous tuner ("Chuck"). It contains foundational provisions for forced induction (Siemens Deka 60 lb/hr injector slopes, an extended MAF transfer curve, and reduced WOT spark timing), but it was **built around a mechanical return fuel system conversion with a bypassed pump**.
-
-When loaded onto a car with Ford's factory **Electronic Returnless Fuel System (ERFS)**, this tune introduces severe architecture conflicts, starting bugs, and thermal reversion hazards.
-
-### High-Level Subsystem Status in `SVTv29.26`
-
-| Subsystem | State in `SVTv29.26` | Safe for Returnless (Nic)? | Required Action |
-| :--- | :--- | :---: | :--- |
-| **Fuel Pressure Sensing** | Flat 40.0 psi (`ECM 7596`) | ❌ **CRITICAL FAIL** | Restore genuine Ford 0–70 psi transfer curve |
-| **Manifold Vac Multiplier**| Set to 0.000 (`ECM 6950`) | ❌ **CRITICAL FAIL** | Restore to 0.484 for injector tip $\Delta P$ |
-| **Pressure Comp Multipliers**| All flat 1.000 (`ECM 32060–64`)| ❌ **POOR TRANSIENTS** | Restore active dynamic compensation |
-| **Injector Slopes** | Siemens Deka 60 lb/hr | ✅ **MATCHED** | Retain verified 60/63 lb slopes & offsets |
-| **Cranking Fueling** | 64°F Cliff (`ECM 44519`) | ❌ **PLUG FOULING** | Smooth 0.335 cliff to 0.850 monotonic taper |
-| **Open-Loop Fueling** | 2.5k RPM Lean Pockets (`ECM 44511`)| ⚠️ **DRIVABILITY STUMBLE**| Normalize 1.07/1.14 pockets to 1.00 |
-| **WOT Boost Fueling** | 0.73–0.75 Lambda (~10.8 AFR) | ✅ **SAFE / RICH** | Maintain safe 11.2–11.5 AFR cushion |
-| **Variable Cam Timing** | Factory NA Overlap (-49.5°) | ❌ **SEVERE OVERHEAT** | Apply v037 reversion lockout (0.00° in boost) |
-| **Borderline Spark (Boost)**| 10.75°–11.50° on Load 2.00 | ✅ **SAFE FOR 10.2:1** | Retain conservative timing (do NOT advance to 13.5°) |
-| **Idle Speed** | 850 RPM Target (`ECM 44218/17`) | ⚠️ **FLYWHEEL CHATTER** | Raise to 950 RPM for single-mass flywheel |
-| **Dashpot Airflow Decay** | 0.00 at low airflow (`ECM 32984`)| ⚠️ **HANGING IDLE** | Decay rate tuning needed for decel return |
+> **Accuracy Note (2026-11-11 Audit):** Earlier notes misstated several values and IDs in `SVTv29.26.hpt`. Direct inspection verified that **`ECM 6950` is already `0.484`**, **`ECM 12115` is already `520.00°F`**, **`ECM 24020/24021` Low Fan is already `195.0/190.0°F`**, **`ECM 12015`** is Injector PW Minimum (not `12013`), **`ECM 12016`** is Pressure Drop Reference (not `12014`), **`ECM 7596`** uses A/D rows `0, 0, 0, 0, 102, 921, 1023`, and **`ECM 12163`** runs `0.00` to `4.80 V`.
 
 ---
 
-## 2. Fuel System & ERFS Architecture Audit (The Core Conflict)
+## 1. Returnless vs. Return-Style Audit (`SVTv29.26.hpt` Actual Values)
 
-In a mechanical return fuel system, an external vacuum-referenced regulator mechanically forces fuel rail pressure to track manifold pressure, while the in-tank pump runs at constant 100% battery voltage via a relay.
-
-On Nic's car, fuel delivery is entirely electronic:
-1. The PCM monitors the **Fuel Rail Pressure Sensor (FRPS)** mounted on the rail.
-2. The PCM computes real-time injector pressure drop: $\Delta P = P_{\text{rail}} - (P_{\text{manifold\_vac}} \times 0.484)$.
-3. The PCM pulses a PWM command to the **Fuel Pump Driver Module (FPDM)**, varying pump speed to maintain exactly 39.15 psi across the injector tip.
-
-### The Return-Style Shortcuts in `SVTv29.26`:
-1. **`[ECM 7596]` Fuel Rail Pressure Sensor Transfer Function:**
-   * **Values:** `0 counts = 40.0 psi`, `102 counts = 40.0 psi`, `921 counts = 40.0 psi`, `1023 counts = 40.0 psi`.
-   * **Flaw:** All 7 displayed rows were forced to `40.00 psi`. The PCM is completely blinded. If rail pressure collapses under boost from 40 psi down to 25 psi, the PCM still reads 40.0 psi and will never command the FPDM to increase pump duty cycle!
-2. **`[ECM 6950]` Manifold Vacuum Multiplier:**
-   * **Value:** `0.000` (disabled).
-   * **Flaw:** The PCM ignores manifold vacuum/boost in its injector pressure calculation. As the engine transitions from 20 inHg of vacuum to 7 psi of boost, the effective pressure drop across the injector changes by over 17 psi, but the PCM assumes it is zero.
-3. **`[ECM 32060, 32062, 32064, 32052]` Pressure Multipliers:**
-   * **Values:** All flat `1.0000` across all cells with repeated 40.0 psi breakpoints.
-   * **Flaw:** Eliminates injector pulsewidth trim during rail pressure ripple, causing hesitations on tip-in and rich bogs on throttle lift.
-4. **`[ECM 43000]` Desired Fuel Pressure Over Injector:**
-   * **Value:** `40.00 psi` across all 7 rows.
-5. **`[ECM 43005]` Desired Fuel Pressure Over Injector AAT Adder:**
-   * **Values:** 40 psi at $<144^\circ\text{F}$ ambient, rising to 57 psi at $170^\circ\text{F}$ and 62 psi at $200^\circ\text{F}+$.
+| ECM ID | Parameter Name | Value in `SVTv29.26.hpt` | Status on Nic's ERFS Car | Required Target (`v000`) |
+| :---: | :--- | :---: | :--- | :--- |
+| **`7596`** | Fuel Pressure Sensor Transfer Function | `0,0,0,0,102,921,1023` -> all `40` psi | **BROKEN** (flatlined FRPS) | `0,0,0,0,0.00,70.00,78.72` psi |
+| **`32731`** | Open Loop Fuel TPS Thresh vs. RPM | All 7 rows (`0..16,384 RPM`) = `0.00` | **BROKEN** (locks idle in Open Loop) | `200, 200, 350, 350, 0, 0, 0` |
+| **`50`** | Master DTC List (`P0190/P0192/P0193/P0132`) | `No Error Reported` / `No MIL Light` | **UNSAFE** (hides FRPS/O2 faults) | All 4 -> `MIL Light` |
+| **`6950`** | Manifold Vacuum Multiplier | `0.484` | **OK** (already returnless!) | Keep `0.484` |
+| **`43000`** | Desired Fuel Pressure Over Injector | `40.00` psi (`0.000–0.002 lb/min`) | **OK** | Keep `40.00` psi |
+| **`12016`** | Injector Pressure Drop Reference | `40.00` psi | **OK** (matches `43000`) | Keep `40.00` psi |
+| **`32047`** | Injector Pressure Compensation | `Enabled` | **OK** | Keep `Enabled` |
+| **`45693`** | Fuel Pump Fixed Duty Cycle Mode | `Disabled` | **OK** (dynamic ERFS active) | Keep `Disabled` |
+| **`45694`** | Fuel Pump Adaptive Voltage | `Enabled` | **OK** | Keep `Enabled` |
+| **`6960`** | Maximum Fuel Pump Duty Cycle | `48.00` (~96% physical FPDM scale) | **OK** | Keep `48.00` |
+| **`6961`** | Minimum Fuel Pump Duty Cycle | `10.00` (~20% physical FPDM scale) | **OK** | Keep `10.00` |
+| **`23000`** | Fuel Pump Gain - Derivative | `0.0000` | **OK** | Keep `0.0000` |
+| **`23001`** | Fuel Pump Gain - Integral | `0.0996` | **OK** | Keep `0.0996` |
+| **`23002`** | Fuel Pump Gain - Proportional | `0.0600` | **OK** | Keep `0.0600` |
+| **`6002`** | Fuel Pump Secondary Monitor | `Enabled` | **OK** | Keep `Enabled` |
+| **`4233 / 4234`** | FPDM KOEO / KOER Test Switch | `Enabled / Enabled` | **OK** | Keep `Enabled` |
 
 ---
 
-## 3. Injector Characterization Data (Siemens Deka 60 lb/hr)
+## 2. Siemens Deka 60 lb/hr (`107961`) Injectors, Aircharge & O2 Gate
 
-`SVTv29.26` has proper baseline characterization for Siemens Deka 60 lb (107961) high-impedance injectors:
-
-| Parameter | ECM ID | Value in `SVTv29.26` | Engineering Notes |
-| :--- | :---: | :---: | :--- |
-| **Injector Flow Rate High** | `12011` | `0.016700000 lb/s` | Equivalent to **60.12 lb/hr** at 39.15 psi reference |
-| **Injector Flow Rate Low** | `12010` | `0.017500000 lb/s` | Equivalent to **63.00 lb/hr** (non-linear low PW slope) |
-| **Injector Breakpoint** | `12012` | `0.00003360 lb` | Slope transition mass threshold |
-| **Injector PW Minimum** | `12015` | `0.00050000 s` | Minimum pulsewidth clamp: 0.50 ms |
-| **Injector Pressure Ref** | `32040` | `40.00 psi` | Baseline differential reference pressure |
-
-### Battery Voltage Offset Curve — `[ECM 32050]`
-*Units: Seconds deadtime compensation vs. Module Voltage*
-
-| Voltage (V) | Offset (s) | Offset (ms) |
-| :---: | :---: | :---: |
-| **6.0 V** | `0.003395` | 3.40 ms |
-| **8.0 V** | `0.001928` | 1.93 ms |
-| **10.0 V** | `0.001099` | 1.10 ms |
-| **11.0 V** | `0.000832` | 0.83 ms |
-| **12.0 V** | `0.000636` | 0.64 ms |
-| **13.0 V** | `0.000517` | 0.52 ms |
-| **14.0 V** | `0.000429` | 0.43 ms |
-| **15.0 V** | `0.000327` | 0.33 ms |
+| ECM ID | Parameter Name | Value in `SVTv29.26.hpt` | Target (`v000`) |
+| :---: | :--- | :---: | :---: |
+| **`12011`** | Injector Flow Rate High | `0.016700000` lb/s (~60.12 lb/hr) | Keep |
+| **`12010`** | Injector Flow Rate Low | `0.017500000` lb/s (~63.00 lb/hr) | Keep |
+| **`12012`** | Injector Breakpoint | `0.00003360` lb | Keep |
+| **`12015`** | Injector PW Minimum | `0.00050000` s (`0.50 ms`) | Keep |
+| **`32050`** | Injector Offset vs IGNV (`13×2`) | `0–6V: 0.00258`, `8V: 0.00144`, `10V: 0.000921`, `11V: 0.000758`, `12V: 0.000636`, `13V: 0.000517`, `14V: 0.000429`, `15–15.9V: 0.000327` | Keep |
+| **`44205`** | Standard Air Charge | `0.00136` lb (~0.617 g/cyl) | **KEEP (defines Load axis)** |
+| **`12115`** | Closed Loop O2 Sensor Temp | `520.00 °F` | Keep |
+| **`1165`** | Fore/Aft Oxygen Sensor Control | `Disabled` | Keep |
+| **`44401`** | Variable Camshaft | `Enabled` | Keep |
+| **`2019 / 44397`** | IMRC Switch / IMRC Sensor | `Disabled / Disabled` | Keep |
 
 ---
 
-## 4. Cold Start & Cranking Fueling Discontinuity
+## 3. Cranking Fuel (`ECM 44519`) & Base Fuel (`ECM 44511`)
 
-### `[ECM 44519]` — Fuel Cranking vs. ECT
-The inherited tune contains an extreme calibration error at 64°F:
-
-| ECT (°F) | Commanded Lambda | Delivered Fuel Multiplier Effect |
-| :---: | :---: | :--- |
-| **40.0°F** | `0.886` | Normal cold start enrichment |
-| **63.99°F** | `0.930` | Normal cold start enrichment |
-| **64.00°F** | **`0.335`** | **CRASH: 64% drop across 0.01°F! Dumps 2.78× MORE fuel** |
-| **90.0°F** | `0.430` | Excessively rich cranking command |
-| **120.0°F** | `0.647` | Extended rich cranking command |
-| **150.0°F** | `0.764` | Warm cranking enrichment |
-| **180.0°F** | `1.000` | Stoichiometric cranking |
-
-*Why this matters:* If Nic cranks the car on an autumn morning when coolant temp is between 64°F and 90°F, the PCM commands 0.335 to 0.430 lambda. On 60 lb injectors, this drenches the combustion chamber with raw gasoline, washes the cylinder walls, and fouls the spark plugs before the engine can catch.
+- **`ECM 44519` (`Fuel Cranking vs. ECT`):** `-20°F -> 0.850`, `0°F -> 0.857`, `20°F -> 0.870`, `30°F -> 0.877`, `40°F -> 0.886`, `63.99°F -> 0.930`, **`64.00°F -> 0.335`**, **`90°F -> 0.430`**, **`120°F -> 0.647`**, **`150°F -> 0.764`**, `180°F -> 1.000`, `220°F -> 1.000`.  
+  **Fix:** Remove the `64.00°F` flooding cliff -> set `64 / 90 / 120 / 150°F` monotonically to **`0.930 / 0.950 / 0.970 / 0.985`**.
+- **`ECM 44511` (`Fuel Base vs. RPM vs. TPS`):** `15.6% @ 2,500 = 1.07` and `19.5% @ 2,500 = 1.14` (lean pockets; `3,500 RPM` at `15.6–23.4%` also sits slightly lean at `1.02–1.03`), while rows `31.2%–68.4%` command safe rich fueling `0.73–0.80` lambda.  
+  **Fix:** Set `2,500 RPM @ 15.6%` and `19.5%` to **`1.00`** (optional `3,500 RPM` light rows -> `1.00`); leave boost/WOT rows untouched.
 
 ---
 
-## 5. Airflow & Mass Airflow (MAF) Calibration
+## 4. VCT Angle (`ECM 44412`) & Spark Ceiling (`ECM 44583`, `32265`)
 
-* **Primary MAF Transfer Function `[ECM 12163]`:** 30-point curve configured for OEM SVT MAF sensor with a **Diablosport MAFia interface box**.
-* **Key Voltage Flow Anchors:**
-  * `0.50 V` $\rightarrow$ `0.420 lb/min` (~3.17 g/s)
-  * `1.00 V` $\rightarrow$ `1.856 lb/min` (~14.03 g/s, near warm idle)
-  * `2.00 V` $\rightarrow$ `8.650 lb/min` (moderate cruise)
-  * `3.00 V` $\rightarrow$ `23.400 lb/min` (entering boost)
-  * `4.00 V` $\rightarrow$ `49.500 lb/min` (peak airflow ~490 hp equivalent scaling)
-  * `4.90 V` $\rightarrow$ `86.500 lb/min` (extended headroom)
-* **Idle Dashpot Decay `[ECM 32984]`:** Set to `0.00` across airflow breakpoints 0.0, 0.2, 0.4, and 0.6 lb/min. This prevents the idle air valve from closing smoothly during off-throttle transitions, leading to a noticeable RPM hang when depressing the clutch while coasting.
+- **`ECM 44412` (`VCT Angle vs. RPM vs. Load`):** `SVTv29.26.hpt` commands up to **`-49.50°`** at `2,500–3,500 RPM` (`0.40–0.80` Load), `-12.00°` to `-29.00°` across **`4,500 RPM`**, and `-5.00°` to `-15.00°` even at **`6,000–6,250 RPM`**.  
+  **Fix:** Paste the validated `v037` table (retaining spool advance below `4,500 RPM`, flat `0.00°` across all loads from `4,500–7,200 RPM`). See [`02-VCT-IDLE-AND-FANS-README.md`](02-VCT-IDLE-AND-FANS-README.md#1-ecm-44412-vct-angle-vs-rpm-vs-load-reversion--spool-fix).
+- **`ECM 44583` (`Spark Borderline Knock`):** Already boost-clamped in `SVTv29.26.hpt`:
+  - Load `0.80`: `-7.00, 2.00, 6.73, 9.28, 9.28, 12.00, 12.00, 12.00, 12.00, 12.00, 12.00`
+  - Load `2.00`: `-7.31, -9.00, 1.65, 4.14, 8.00, 11.50, 11.50, 11.50, 11.25, 11.00, 10.75`
+  - **`ECM 32265` (`Spark MBT`):** `16.00°` at `0.80` (`3,250–7,200`), `13.00–13.75°` at `2.00` (`5,000–7,200`). **KEEP BOTH UNTOUCHED** for Nic's stock 10.2:1 rods.
+- **Rev Limiters (`ECM 2070` Cutoff, `ECM 44473` Neutral):** Both **`7,400` RPM** -> Keep.
 
 ---
 
-## 6. Open Loop Base Fuel Map — `[ECM 44511]`
+## 5. Idle Speed, Dashpot & Cooling Fans
 
-Grid: 11 RPM Columns ($1,000$ to $7,400\text{ RPM}$) $\times$ 8 TPS Rows ($15.6\%$ to $68.4\%$).
-
-| TPS % / RPM | 1,000 | 2,500 | 3,500 | 4,000 | 4,500 | 5,000 | 5,500 | 6,000 | 6,500 | 7,400 |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Row 1 (15.6%)** | 1.00 | **1.07** | 1.02 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
-| **Row 2 (19.5%)** | 1.00 | **1.14** | 1.02 | 0.85 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
-| **Row 3 (23.4%)** | 1.00 | 1.00 | 1.03 | 0.85 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
-| **Row 4 (31.2%)** | 1.00 | 0.80 | 0.80 | 0.73 | 0.75 | 0.75 | 0.75 | 0.75 | 0.75 | 0.75 |
-| **Row 5 (35.2%)** | 0.80 | 0.80 | 0.80 | 0.73 | 0.75 | 0.75 | 0.75 | 0.75 | 0.75 | 0.75 |
-| **Row 6 (39.1%)** | 0.80 | 0.73 | 0.73 | 0.73 | 0.73 | 0.74 | 0.74 | 0.74 | 0.74 | 0.74 |
-| **Row 7 (53.7% WOT)**| 0.80 | 0.75 | 0.75 | 0.74 | 0.73 | 0.74 | 0.74 | 0.74 | 0.75 | 0.74 |
-
-* **Analysis:**
-  * **The 2,500 RPM Lean Pockets:** At Rows 1 and 2, commanded lambda jumps to **1.07** and **1.14** (~15.7–16.7 AFR). This causes lean stumbles and hitching during light-throttle cruising and city acceleration.
-  * **WOT Enrichment:** Rows 6 and 7 command **0.73–0.75 Lambda (~10.7–11.0 AFR)**. While rich, this provides a safe fuel-cooling margin on pump gas.
+- **`ECM 44218 / 44217` (`Target Idle Speed P/N & Drive`):** `850` -> **`950` RPM**
+- **`ECM 47996` (`Idle Spark Proportional Gain`):** `2.000` -> **`1.000`**
+- **`ECM 32984` (`Idle Dashpot Decay`):** `0.0, 0.2, 0.4, 0.6 lb/min` = `0.00` -> **`0.02, 0.03, 0.04, 0.05`** (keep `0.8=0.06`, `1.0=0.08`, `3.0=0.10`)
+- **`ECM 32988` (`Idle Dashpot Pre-Position`):** `0=0.04`, `150=0.04`, `1150=0.35`, `2150=0.78 -> 0.55`, `3150=1.11 -> 0.80`, `4150=1.50 -> 1.00`
+- **Cooling Fans:**
+  - `ECM 24020` Low Enable = **`195.0 °F`** (Keep), `ECM 24021` Low Disable = **`190.0 °F`** (Keep)
+  - `ECM 24030` High Enable: `225.0` -> **`205.0 °F`**, `ECM 24031` High Disable: `215.0` -> **`199.0 °F`**, `ECM 24035` High-Load Enable: `235.0` -> **`205.0 °F`**
+  - `ECM 45804` Electric Fan = **`Enabled`**, `ECM 44224` Fan High Speed Idle = **`Enabled`**
 
 ---
 
-## 7. Variable Cam Timing (VCT) — `[ECM 44412]` (The Overheating Hazard)
+## 6. Actual `ECM 12163` MAF Curve in `SVTv29.26.hpt` (`0.00` to `4.80 V`)
 
-`SVTv29.26` retains the **factory Naturally Aspirated intake cam timing table**:
+Keep untouched until the **Diablo MAFia** dial position is verified and first warm-idle `STFT` is logged *(note: `UJAHAS3` has a documented VCM Editor `lb/min` display-label quirk on `ECM 12163`)*:
 
-| Load / RPM | 1,000 | 1,500 | 2,000 | 2,500 | 3,500 | 4,500 | 6,000 | 6,250 | 6,750 | 7,000 | 7,200 |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0.10** | 0.00 | -10.00 | -15.00 | -20.00 | -15.00 | -15.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| **0.20** | -10.00 | -22.00 | -30.00 | -39.60 | -35.00 | -34.00 | 0.00 | 0.00 | 5.00 | 0.00 | 0.00 |
-| **0.30** | -10.00 | -25.00 | -34.80 | -42.00 | -42.00 | -31.60 | -5.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| **0.40** | -10.00 | -26.00 | -35.10 | -45.00 | **-49.50** | **-49.50** | -10.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| **0.50** | -10.00 | -28.00 | -33.50 | -45.00 | **-49.50** | **-49.50** | -15.00 | -5.00 | 0.00 | 0.00 | 0.00 |
-| **0.60** | -10.00 | -26.50 | -28.50 | -45.00 | **-49.50** | **-49.50** | -15.00 | -5.00 | 0.00 | 0.00 | 0.00 |
-| **0.70 (Boost)** | -10.00 | -21.00 | -23.00 | -24.00 | **-49.50** | **-49.50** | -10.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| **0.80 (Boost)** | -10.00 | -17.00 | -19.00 | -19.00 | **-49.50** | **-49.50** | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| **1.00 (Boost)** | -10.00 | -12.00 | -13.00 | -13.00 | -13.00 | -12.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-
-### The Physics Failure Mode:
-On a turbo engine under boost, pre-turbine exhaust manifold backpressure reaches 18–24 psi, while intake boost is only 6–8 psi. Commanding **-49.50° of intake valve advance** creates huge valve overlap. Because pre-turbine exhaust pressure is higher than intake pressure, **superheated 1,500°F exhaust gas blows backwards into the intake runners**, baking the intake valves, superheating charge air, causing violent knock, and driving rapid coolant temperature spikes (+12°F rise during a single pull).
-
----
-
-## 8. Spark Advance & Knock Protection
-
-### `[ECM 44583]` — Spark Borderline Knock vs. RPM vs. Load
-*Units: Degrees Ignition Advance (BTDC)*
-
-| Load / RPM | 1,000 | 1,850 | 2,450 | 2,800 | 3,250 | 5,000 | 5,750 | 6,000 | 6,250 | 6,500 | 7,200 |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0.30 (Cruise)** | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° | 42.0° |
-| **0.50 (Moderate)**| 32.0° | 32.0° | 32.0° | 32.0° | 32.0° | 34.0° | 34.0° | 34.0° | 34.0° | 34.0° | 34.0° |
-| **0.70 (Spool)** | 18.0° | 20.0° | 21.0° | 22.0° | 23.0° | 24.0° | 24.0° | 24.0° | 24.0° | 24.0° | 24.0° |
-| **0.80 (Boost)** | 6.5° | 13.5° | 15.0° | 16.5° | 17.0° | 18.0° | 18.0° | 18.0° | 18.0° | 18.0° | 18.0° |
-| **2.00 (Full Boost)**| -7.31°| -9.00°| 1.65° | 4.14° | 8.00° | **11.50°**| **11.50°**| **11.50°**| **11.25°**| **11.00°**| **10.75°**|
-
-* **Analysis for Nic's Engine:**
-  * Unlike your built engine (9.25:1 static compression ratio which safely carries 13.50° timing at WOT), Nic has **factory 10.2:1 compression with stock powdered-metal rods**.
-  * The timing values on Row 9 (**10.75° – 11.50°**) are conservative and appropriate. **They should NOT be advanced further until intercooler performance and knock retard are thoroughly logged.**
-
----
-
-## 9. Master DTC Diagnostic Mask
-
-`SVTv29.26` configured emissions and sensor reporting for an off-road turbo setup:
-* **Downstream O2 / Catalyst (Disabled):** P0136, P0138, P0140, P0141, P0420, P0430 (allows catless downpipe without CEL).
-* **EGR System (Disabled):** Standard for turbo exhaust manifold swap.
-* **Fuel Rail Pressure Diagnostics:** P0190, P0191, P0192, and P0193 were suppressed or blinded due to the 40 psi flat transfer table.
-
----
-
-## 10. Verdict: What Happens if Flashed Unmodified on Nic's Car?
-
-1. **Fuel Pump Collapse:** The PCM believes rail pressure is permanently 40 psi. Under boost, as manifold pressure climbs and fuel demand peaks, the PCM will not command sufficient FPDM duty cycle. Rail pressure will drop, causing an extreme lean event under boost.
-2. **Hard Starting & Plug Wetting:** Morning starts around 64°F–75°F will flood the engine with 2.8× commanded fuel mass.
-3. **Thermal Reversion & Knock:** At WOT, VCT overlap will push 1,500°F exhaust gas into the intake runners, rapidly spiking coolant temperatures past 215°F and provoking detonation on stock 10.2:1 rods.
-4. **Rough Decel & Idle Chatter:** The 850 RPM idle will rattle the lightweight clutch/flywheel, and the 0.00 dashpot airflow cells will cause RPM hangs.
+- **Voltage (`V`):** `0.00, 0.38, 0.40, 0.44, 0.48, 0.50, 0.53, 0.54, 0.60, 0.65, 0.70, 0.90, 1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.60, 1.80, 2.00, 2.20, 2.40, 2.60, 2.80, 3.00, 3.20, 3.40, 3.80, 4.80`
+- **Editor UI Display (`lb/min` label):** `0.0, 2.0, 2.5, 3.0, 3.7, 3.8, 3.8, 3.9, 4.9, 5.0, 6.9, 10.2, 11.4, 12.4, 16.4, 18.4, 22.6, 25.3, 29.3, 39.0, 49.8, 71.2, 89.3, 112.9, 139.4, 165.1, 194.9, 239.1, 329.1, 410.6`

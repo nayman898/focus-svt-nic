@@ -9,14 +9,14 @@
 
 ## Executive Summary & Core Conflict
 
-Nic's Focus SVT was given a calibration identical to the previous tuner's `SVTv29.26.hpt` (verified byte-identical SHA-256 hash). That calibration was configured for a **mechanically regulated return-style fuel system** with a bypassed fuel pump and fixed rail pressure. 
+Nic's starting base calibration is [`tunes/SVTv29.26.hpt`](tunes/SVTv29.26.hpt) (`212,349` bytes). Direct inspection of `SVTv29.26.hpt` shows it retains several underlying returnless parameters (`ECM 6950 = 0.484`, `ECM 43000/12016 = 40.00 psi`, FPDM PID, and `ECM 32047` pressure compensation), but key return-style hacks were applied on top: the FRPS transfer (`ECM 7596`) is flatlined to `40` psi, Open Loop TPS thresholds (`ECM 32731`) are zeroed to `0.00`, and FRPS/O2 DTCs (`ECM 50`) are suppressed — plus there is a `64°F` cranking cliff (`ECM 44519`) and excessive VCT advance (`ECM 44412`).
 
-Nic’s car, however, retains the **factory Ford Electronic Returnless Fuel System (ERFS)**:
+Nic’s car retains the **factory Ford Electronic Returnless Fuel System (ERFS)**:
 * Factory in-tank fuel pump modulated by the **Fuel Pump Driver Module (FPDM)** via PCM duty cycle.
 * Factory **Fuel Rail Pressure Sensor (FRPS)** measuring real-time differential pressure across injector tips.
 * Dynamic pressure compensation tables intended to offset rail pressure variations during transients.
 
-Running a return-style tune on factory returnless hardware disables the PCM’s closed-loop fuel pump control and pressure compensation. In combination with a **draw-through MAF with a vented-to-atmosphere (VTA) blow-off valve** and the **factory high-compression 10.2:1 bottom end**, this explains why the car runs rough, hesitates, and is at extreme risk under boost.
+With `ECM 7596` flatlined and `ECM 32731` zeroed, closed-loop FRPS feedback and idle Closed Loop cannot operate properly. Combined with a **draw-through MAF with a vented-to-atmosphere (VTA) blow-off valve** and the **factory high-compression 10.2:1 bottom end**, restoring proper FRPS scaling, cranking, idle Closed Loop, and safe cam phasing in `v000-initial-start.hpt` is mandatory before boost pulls.
 
 ---
 
@@ -33,38 +33,36 @@ Running a return-style tune on factory returnless hardware disables the PCM’s 
 
 ---
 
-## 2. Inherited Tuner Errors in `SVTv29.26` That Must Be Repaired
+## 2. Inherited Tuner Errors in `SVTv29.26.hpt` That Must Be Repaired
 
-Our 37-revision audit of the tuner's base calibrations revealed serious flaws that break returnless operation:
+Our audit of the starting `SVTv29.26.hpt` calibration revealed critical gaps that break returnless pump feedback, idle Closed Loop, startup fueling, and turbo cam control:
 
 ```
-[Inherited Tune SVTv29.26] 
-  ├── ECM 7596 (FRPS Transfer)        ──> FLATTENED TO 40 PSI FLAT (Kills closed-loop pump control)
-  ├── ECM 6950 (Manifold Vacuum Mult)  ──> SET TO 0.000 / INACTIVE (Destroys Delta-P calculation)
-  ├── ECM 32060-32064 (Pressure Mults) ──> FLATTENED TO 1.000 (Causes lean tip-in / rich lift-off)
-  ├── ECM 44519 (Cranking Lambda)     ──> 64% CLIFF AT 64°F (Causes cold/warm starting flooding)
-  ├── ECM 44511 (Open Loop Base Fuel) ──> LEAN POCKETS (1.07-1.14 Lambda at 2500 RPM)
-  └── ECM 44412 (VCT Cam Phasing)     ──> FACTORY NA ADVANCE (1,500°F exhaust gas reversion in boost)
+[Starting Tune SVTv29.26.hpt]
+  ├── ECM 7596 (FRPS Transfer)        ──> FLATTENED TO 40 PSI FLAT (Blinds FPDM pressure feedback)
+  ├── ECM 32731 (OL TPS Threshold)    ──> ZEROED TO 0.00 (Traps idle permanently in Open Loop)
+  ├── ECM 50 (Master DTC List)        ──> MUTED P0190/P0192/P0193/P0132 (Hides FRPS & O2 faults)
+  ├── ECM 44519 (Cranking Lambda)     ──> 64% CLIFF AT 64°F (Causes warm-start plug flooding)
+  ├── ECM 44511 (Open Loop Base Fuel) ──> LEAN POCKETS (1.07-1.14 Lambda at 2,500 RPM)
+  └── ECM 44412 (VCT Cam Phasing)     ──> EXCESSIVE OVERLAP (-49.5° & active at 4,500-6,250 RPM)
 ```
 
 ### Specific Parameter Audit & Corrections:
 
-### A. Returnless Fuel Pressure & Pump Architecture
+### A. Returnless Fuel Pressure, Closed Loop & Pump Architecture
 1. **`[ECM 7596]` — Fuel Rail Pressure Sensor Transfer Function**:
-   * *The Tuner's Hack:* Set all 7 voltage breakpoints to a flat `40.00 psi`. The PCM was blinded into believing rail pressure was perpetually 40 psi.
-   * *The Fix for Nic:* Restore the authentic Ford linear sensor transfer: `0.50V = 0.0 psi`, `4.50V = 70.0 psi`. Without this, the closed-loop pump PID cannot see rail pressure collapse under boost.
-2. **`[ECM 6950]` — Manifold Vacuum Multiplier**:
-   * *The Tuner's Hack:* Set to `0.000` (standard return conversion practice).
-   * *The Fix for Nic:* Restore to factory **`0.484`**. In ERFS, true differential injector pressure is:
-     $$\Delta P = P_{\text{rail}} - (P_{\text{manifold\_vac}} \times 0.484)$$
-     Zeroing this causes massive fueling errors as manifold pressure transitions from vacuum (-20 inHg) to boost (+7 psi).
-3. **`[ECM 32060, 32062, 32064, 32052]` — Pressure Compensation Multipliers**:
-   * *The Tuner's Hack:* Set to flat `1.0000` across all cells with repeated 40 psi axes.
-   * *The Fix for Nic:* Restore active dynamic curves. In an ERFS car, rail pressure fluctuates by ±3–5 psi during rapid throttle changes; these multipliers scale injector pulsewidth instantaneously to eliminate hesitation.
-4. **Fuel Pump PID & Duty Bounds**:
-   * Retain factory PID gains (`P = 0.0600`, `I = 0.0996`, `D = 0.0000`).
-   * Set max duty cycle boundary to **`48.0%`** (Ford FPDM saturation is 50%).
-   * Target Differential Pressure (`ECM 43000`): **`39.15 psi`**.
+   * *The Tuner's Hack:* Set all 7 A/D breakpoints (`0, 0, 0, 0, 102, 921, 1,023`) to a flat `40` psi. The PCM was blinded into believing rail pressure was perpetually 40 psi.
+   * *The Fix for Nic (`v000`):* Restore the authentic Ford linear sensor transfer: `0..102 counts (0.50V) = 0.00 psi`, `921 counts (4.50V) = 70.00 psi`, `1,023 counts (5.00V) = 78.72 psi`. Without this, the closed-loop pump PID cannot see rail pressure sag under boost.
+2. **`[ECM 32731]` — Open Loop Fuel TPS Threshold vs. RPM**:
+   * *The Tuner's Hack:* Zeroed to `0.00` across all 7 RPM rows (`0–16,384 RPM`), locking idle permanently into Open Loop `Power Demand Enrich`.
+   * *The Fix for Nic (`v000`):* Restore `200.00` A/D counts at `0` & `1,500 RPM` and `350.00` at `2,000` & `2,500 RPM` (keeping `0.00` above `5,500 RPM`) so Closed Loop activates smoothly at idle and light cruise.
+3. **`[ECM 50]` — Master DTC List (`P0190 / P0192 / P0193 / P0132`)**:
+   * *The Fix for Nic (`v000`):* Re-enable all three FRPS DTCs and upstream O2 high-voltage reporting to **`MIL Light`** instead of hiding hardware faults.
+4. **Verify & Keep Existing ERFS Core Tables (`SVTv29.26.hpt` Already Intact)**:
+   * **`ECM 6950`** (`Manifold Vacuum Multiplier`): already **`0.484`** (do NOT zero).
+   * **`ECM 43000` & `12016`** (`Desired Fuel Pressure Over Injector` & `Pressure Drop Reference`): both **`40.00 psi`**.
+   * **`ECM 32047` / `45693` / `45694`**: Injector Pressure Compensation `Enabled`, Fixed DC Mode `Disabled`, Adaptive Voltage `Enabled`.
+   * **Fuel Pump PID & Duty Bounds:** Retain factory PID gains (`ECM 23002 P = 0.0600`, `23001 I = 0.0996`, `23000 D = 0.0000`) and bounds (`ECM 6960` Max **`48.00%`**, `ECM 6961` Min **`10.00%`**).
 
 ### B. Starting & Transient Fueling Bugs
 1. **`[ECM 44519]` — Cranking Fuel ECT Cliff**:
@@ -120,40 +118,39 @@ Before writing or logging a revised tune, Nic must verify four physical points:
 
 ## 4. Staged Tuning Execution Roadmap
 
-### Phase 1: Clean Architecture Restoration (`v001`)
-* Take a fresh, virgin ECU read from Nic's vehicle (`v000-stock-read.hpt`) and back it up.
-* Build `v001` with:
-  * Restored returnless parameters (`ECM 7596` linear transfer, `ECM 6950 = 0.484`, dynamic pressure multipliers enabled).
-  * Siemens Deka 60 lb/hr injector characterization (slopes, breakpoint, battery offset).
-  * Target idle speed set to **950 RPM** (dampens lightweight single-mass flywheel chatter).
-  * Idle spark gain set to **1.000** and spark floor to **-6.0°**.
-  * Cranking fuel cliff at 64°F eliminated.
+### Phase 1: Initial Start & ERFS Restoration (`v000-initial-start.hpt`)
+* Take a fresh ECU backup read from Nic's vehicle (`backups/ecu-read-backup.hpt`) before flashing.
+* Nic builds **`tunes/v000-initial-start.hpt`** from **`tunes/SVTv29.26.hpt`** following [`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md):
+  * Returnless sensor, Closed Loop & DTC restoration (`ECM 7596` linear transfer, `ECM 32731` OL TPS threshold, `ECM 50` `P0190/P0192/P0193/P0132` -> `MIL Light`).
+  * Verify & keep existing Deka 60 lb/hr injector data (`ECM 12011/10/12/15/32050`), `ECM 6950 = 0.484`, `ECM 43000/12016 = 40.00 psi`, and ERFS pump PID.
+  * Target idle speed set to **950 RPM** (`ECM 44218/44217`), idle spark gain **`1.000`** (`ECM 47996`), dashpot smoothing (`ECM 32984/32988`), and earlier high-fan cooling (`ECM 24030/24031/24035`).
+  * Cranking fuel cliff at `64°F` eliminated (`ECM 44519`), `2,500 RPM` lean pockets fixed (`ECM 44511`), and validated `v037` VCT cam table applied (`ECM 44412`, `0.00°` at `4,500–7,200 RPM`).
 
-### Phase 2: Warm Idle & Fuel Rail Pressure Verification (`v002`)
+### Phase 2: Warm Idle & Fuel Rail Pressure Verification (`v000` First Log)
 * Connect MPVI4 using `profiles/Focus_SVT_Returnless_Boost.Channels.xml`.
-* Record a 3–5 minute warm idle datalog (`logs/nic-svt-baseline-idle-01.hpl`).
+* Record a warm idle datalog to `ECT >= 180°F` (`logs/nic-svt-v000-first-start.hpl`).
 * **Telemetry Acceptance Criteria:**
-  * Fuel rail pressure holds steady at **39.0 ± 2.0 psi**.
-  * FPDM duty cycle sits between **15% and 22%** at idle.
-  * Short-term fuel trims (STFT) settle within **±5%**.
-  * Engine idles without rhythmic surging or hunting.
+  * Fuel rail delta-P holds steady near **`40.0 ± 2.0 psi`**.
+  * FPDM duty cycle stays well below the **`45.0%`** warning threshold at idle.
+  * Closed Loop turns active and short-term fuel trims (STFT) settle cleanly.
+  * Radiator fans cycle at `195°F` (Low) and `205°F` (High) without idle hunting.
 
-### Phase 3: Off-Boost Cruising & Decel Tuning (`v003`)
+### Phase 3: Off-Boost Cruising, MAF & Decel Tuning (`v001+`)
 * Low-speed street driving (neighborhood cruise up to 3,500 RPM, strictly in vacuum, no boost).
-* Adjust low-to-mid MAF voltage points (1.2V to 2.5V) to center fuel trims.
-* Tune dashpot decay to prevent RPM hanging or clutch-in stalling exacerbated by the VTA blow-off valve.
+* Adjust low-to-mid MAF voltage points (`ECM 12163`) once MAFia dial position and warm-idle `STFT` are confirmed.
+* Fine-tune dashpot decay (`ECM 32984`) / pre-position (`ECM 32988`) if decel RPM hangs or dips with the VTA blow-off valve.
 
-### Phase 4: Wastegate Base Spring Pulls & Thermal Lockout (`v004`)
-* Apply the **v037 VCT cam angle table** (advance locked to `0.00°` above 3,500 RPM in boost rows and across 4,500–7,200 RPM).
-* Set boost control strictly to **wastegate spring only** (EBC/MBC disconnected or WGDC = 0%).
+### Phase 4: Wastegate Base Spring Pulls (`v002+`)
+* Confirm `ECM 44412` (`v037` VCT lockout) and `ECM 44583` boost spark (`10.75°–11.50°`) remain active.
+* Set boost control strictly to **wastegate spring only** (5–7 psi).
 * Execute a staged 3rd gear roll-on from 2,500 to 5,500 RPM:
   * **Immediate Abort Rule 1:** Fuel Pump Duty Cycle $\ge 45\%$ (indicates fuel pump starvation).
   * **Immediate Abort Rule 2:** Wideband Lambda $> 0.80$ under boost.
   * **Immediate Abort Rule 3:** Any knock retard $> 1.5^\circ$.
   * **Immediate Abort Rule 4:** Boost exceeds **8.0 psi**.
 
-### Phase 5: Power Timing & Target Boost Acceptance (`v005+`)
-* Verify rail pressure delta-P holds steady at 39–40 psi under boost without sagging.
+### Phase 5: Power Timing & Target Boost Acceptance (`v003+`)
+* Verify rail pressure delta-P holds steady near `40.0 psi` under boost without sagging.
 * Incrementally advance spark timing toward the conservative 10.2:1 ceiling (11.0°–11.5°).
 * Ensure intake air temperatures (PID 2127) remain safe post-intercooler.
 * Hand off a smooth, fully validated, reliable daily driver tune.

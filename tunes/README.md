@@ -1,11 +1,19 @@
 # Tune Revision Catalog
 
-All tune revision binaries (`.hpt`) and their markdown run documentation are stored here.
+All tune binaries (`.hpt`) and calibration documentation live here.
 
-### Rules for Tunes:
-1. **Never edit an existing tune file in place.** Always increment the version number (`v001`, `v002`, `v003`, etc.).
-2. Every tune has:
-   * A parent file it was derived from.
-   * An immediate rollback file if testing encounters adverse behavior.
-   * A corresponding entry in `revisions.json` containing its exact SHA-256 hash.
-3. The original factory read (`v000-stock-read.hpt`) is placed in `backups/` and committed as the root parent of all subsequent tunes.
+### Start Here — Building `v000` Initial Start Tune
+- **Fresh `v000` README Doc:** **[`v000-initial-start-README.md`](v000-initial-start-README.md)**
+- **Starting Base Tune:** [`SVTv29.26.hpt`](SVTv29.26.hpt) (`212,349` bytes) — **DO NOT modify in place.**
+- **Target `v000` Output File:** `tunes/v000-initial-start.hpt` (`File -> Save As` from `SVTv29.26.hpt`).
+
+### Modular Navigator Docs (`docs/`)
+1. [Master Build & Navigator Guide](../docs/NIC_TUNE_BUILD_README.md)
+2. [01 — Returnless Fuel, Closed Loop & DTCs](../docs/01-FUEL-ERFS-AND-DTC-README.md)
+3. [02 — VCT Lockout, Idle/Dashpot & Cooling Fans](../docs/02-VCT-IDLE-AND-FANS-README.md)
+4. [03 — Verify & Keep Checklist](../docs/03-VERIFY-AND-KEEP-CHECKLIST-README.md)
+
+### Versioning Rules
+1. **`v000` (`v000-initial-start.hpt`)** is Nic's initial self-built startup & idle tune derived from `SVTv29.26.hpt`. Future MAF, drivability, and boost revisions increment cleanly from **`v001`**, **`v002`**, etc.
+2. **Never edit an existing `.hpt` file in place.** Always `Save As` the next revision before making changes and record its SHA-256 hash in [`revisions.json`](revisions.json).
+3. Keep an untouched ECU read from the vehicle in `../backups/` per [`docs/first-connection.md`](../docs/first-connection.md).

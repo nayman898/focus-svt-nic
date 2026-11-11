@@ -21,10 +21,9 @@ This guide walks Nic through pulling the virgin factory read from his Focus SVT 
 2. Click **Flash $\to$ Read Entire**.
 3. Select your hardware device (MPVI) and click **Read**.
 4. The process takes roughly 2 to 4 minutes.
-5. **Immediately save the read file twice:**
-   * Primary save: `backups/v000-stock-read.hpt`
-   * Working copy: `tunes/v000-stock-read.hpt`
-6. *Never modify the file in `backups/`.* That is your permanent baseline.
+5. **Immediately save the untouched ECU read as your backup:**
+   * Save as: `backups/ecu-read-backup.hpt`
+6. *Never modify the file in `backups/`.* That is your permanent recovery backup, separate from `tunes/SVTv29.26.hpt` (your editing starting point) and `tunes/v000-initial-start.hpt` (your initial startup tune).
 
 ---
 
