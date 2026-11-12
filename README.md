@@ -9,10 +9,11 @@
 
 ---
 
-## Start Here — Initial Start (`v000`) & MAFia Position 2 (`v001`)
+## Start Here — Initial Start (`v000`), MAFia Pos 2 (`v001`) & Low-End Bump (`v002`)
 
 - **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).
-- **[`tunes/v001-mafia-pos2-README.md`](tunes/v001-mafia-pos2-README.md)** — **Next step (`v001`): `ECM 12163` MAF curve for Diablo MAFia Position `2` + 20-channel VCM Scanner XML import** (fixes the `~2.2x` rich overfueling/FMEM lockout seen in `v000`/`v001` logs and recovers missing RPM, Timing, STFT, IAC, and Fuel Pressure channels).
+- **[`tunes/v001-mafia-pos2-README.md`](tunes/v001-mafia-pos2-README.md)** — **`v001`: `ECM 12163` MAF curve for Diablo MAFia Position `2` + 20-channel VCM Scanner XML import** (fixes the `~2.2x` rich overfueling/FMEM lockout seen in `v000`/`v001` logs).
+- **[`tunes/v002-idle-maf-bump-README.md`](tunes/v002-idle-maf-bump-README.md)** — **Current calibration (`v002`): smooth `+15%` low-end `ECM 12163` bump (`0.70–1.20 V`, tapering to `0%` at `>= 2.40 V`)** after `v003` lean cutoff + pre-O2 exhaust leak & Scanner XML checklist.
 
 ### Modular Navigator Reference Guides
 1. **[Master Build & Navigator Guide](docs/NIC_TUNE_BUILD_README.md)** — Hardware pre-flight, VCM Editor units, Navigator workflow, Compare check & abort thresholds.

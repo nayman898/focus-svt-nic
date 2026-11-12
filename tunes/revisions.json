@@ -50,6 +50,19 @@
       "parameter_changes": [
         "ECM 12163 (MAF Airflow vs. Voltage: replace SVTv29.26 PMAS HPX curve 0.0..410.6 lb/h with smooth convex Position 2 curve 0.00..337.71 lb/h UI / 0.0000..5.6285 lb/min Editor UI; 0.90V=4.63, 1.00V=5.90, 1.20V=9.10, 2.00V=32.86, 3.00V=95.51, 3.80V=179.83, 4.80V=337.71 lb/h)"
       ]
+    },
+    {
+      "revision": "v002",
+      "filename": "v002-idle-maf-bump.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v001-mafia-pos2.hpt",
+      "rollback": "v001-mafia-pos2.hpt",
+      "status": "Pending manual VCM Editor build by Nic using tunes/v002-idle-maf-bump-README.md",
+      "summary": "Smooth +15% low-end ECM 12163 MAF fuel bump (0.70-1.20 V, tapering to 0% at >= 2.40 V) following v002/v003 logs (0.930 V = 0.6315 lb/min warm idle, v003 aborted at 95.5 s / 156 F with O2 0.3304->0.0472 V and AEM reading lean alongside known pre-O2 exhaust leak).",
+      "parameter_changes": [
+        "ECM 12163 (MAF Airflow vs. Voltage: smooth convex +15% idle/warmup bump; 0.90V 4.63->5.32, 1.00V 5.90->6.79, 1.10V 7.38->8.49, 1.20V 9.10->10.46, tapering via 1.60V +10%, 2.00V +4%, untouched 0% across 2.40-4.80 V)"
+      ]
     }
   ],
   "reference_files": [
