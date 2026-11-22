@@ -9,7 +9,10 @@
 
 ---
 
-## Start Here — Initial Start (`v000`), MAFia Pos 2 (`v001`), Bump (`v002`) & Low-End Curve (`v003`)
+## Tune Build Sheets
+
+- **[`tunes/v005-dashpot-decay-README.md`](tunes/v005-dashpot-decay-README.md)** — Preferred trial for the second RPM dip in `Datalog-v007.hpl`. Two low-airflow decay cells in `ECM 32984`, a calibration audit, and a focused parked-test profile.
+- **[`tunes/v004-dashpot-catch-README.md`](tunes/v004-dashpot-catch-README.md)** — Separate pre-position trial from `v003`, with one edit at 3,150 RPM in `ECM 32988`.
 
 - **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).
 - **[`tunes/v001-mafia-pos2-README.md`](tunes/v001-mafia-pos2-README.md)** — **`v001`: `ECM 12163` MAF curve for Diablo MAFia Position `2` + 20-channel VCM Scanner XML import** (fixes the `~2.2x` rich overfueling/FMEM lockout seen in `v000`/`v001` logs).

@@ -76,6 +76,32 @@
       "parameter_changes": [
         "ECM 12163 (MAF Airflow vs. Voltage: strictly convex 0.38-1.10 V reshape anchored to v005 Closed Loop trims; 0.65V 2.61->3.22, 0.70V 3.07->3.69, 0.90V 5.32->5.75, 1.00V 6.79->7.05, 1.10V 8.49->8.60; 1.20-4.80 V unchanged)"
       ]
+    },
+    {
+      "revision": "v004",
+      "filename": "v004-dashpot-catch.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v003-low-end-maf-curve.hpt",
+      "rollback": "v003-low-end-maf-curve.hpt",
+      "status": "Build sheet prepared in tunes/v004-dashpot-catch-README.md. Pending manual VCM Editor build, comparison, and stationary validation.",
+      "summary": "Single-cell dashpot pre-position trial for the uncommanded stall after an approximately 3,000 RPM release in Datalog-v007.hpl. Warm-idle and off-idle closed-loop fuel correction support retaining the v003 MAF curve.",
+      "parameter_changes": [
+        "ECM 32988 (Idle Dashpot Pre-Position vs. RPM: 3,150 RPM, 0.80 -> 0.88 lb/min)"
+      ]
+    },
+    {
+      "revision": "v005",
+      "filename": "v005-dashpot-decay.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v003-low-end-maf-curve.hpt",
+      "rollback": "v003-low-end-maf-curve.hpt",
+      "status": "Preferred trial for the second RPM dip. Build sheet prepared. Pending VCM Editor comparison and stationary validation.",
+      "summary": "Tests a slower low-airflow dashpot decay during the idle handoff after the initial catch in Datalog-v007.hpl.",
+      "parameter_changes": [
+        "ECM 32984 (Idle Dashpot Decay vs. Dashpot Airflow: 0.20 lb/min breakpoint, 0.03 -> 0.02; 0.40 lb/min breakpoint, 0.04 -> 0.03)"
+      ]
     }
   ],
   "reference_files": [

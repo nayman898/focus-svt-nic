@@ -2,7 +2,9 @@
 
 All tune binaries (`.hpt`) and calibration documentation live here.
 
-### Start Here — Initial Start (`v000`), MAFia Pos 2 (`v001`), Bump (`v002`) & Low-End Curve (`v003`)
+### Revision Guides
+- **Preferred Trial (`v005`):** [Low-Airflow Dashpot Decay Build Sheet](v005-dashpot-decay-README.md). Test the second RPM dip by slowing low-airflow decay in `ECM 32984` from `v003`.
+- **Pre-Position Trial (`v004`):** [Dashpot Catch Build Sheet](v004-dashpot-catch-README.md). Test a single `ECM 32988` adjustment from `v003`.
 - **Fresh `v000` README Doc:** **[`v000-initial-start-README.md`](v000-initial-start-README.md)**
 - **MAFia Position `2` Base (`v001`):** **[`v001-mafia-pos2-README.md`](v001-mafia-pos2-README.md)** — `ECM 12163` 30-point Position `2` MAF curve (`lb/h` & `lb/min` tables) and 20-channel VCM Scanner XML import steps.
 - **Low-End Bump (`v002`):** **[`v002-idle-maf-bump-README.md`](v002-idle-maf-bump-README.md)** — Smooth `+15%` low-end `ECM 12163` bump (`0.70–1.20 V`, tapering to `0%` at `>= 2.40 V`) after `v003` lean cutoff + pre-O2 exhaust leak & Scanner XML checklist.

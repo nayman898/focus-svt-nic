@@ -28,7 +28,7 @@ With `ECM 7596` flatlined and `ECM 32731` zeroed, closed-loop FRPS feedback and 
 | **Fuel Delivery** | Return-style (Aeromotive 1:1 FPR, bypassed pump on relay) | **Factory Returnless ERFS (Stock FPDM + OEM pump)** | **MUST RESTORE RETURNLESS LOGIC:** PCM must actively control FPDM; sensor transfer and delta-P multipliers must be active. |
 | **Fuel Pump Limit** | Upgraded Stealth pump (high headroom) | Stock SVT pump (~190 LPH) | Saturation limit is **45–48% FPDM duty cycle**. Safe limit is ~260–280 whp. Datalogging pump duty cycle under boost is a mandatory stop condition. |
 | **MAF & Intake** | PMAS HPX in 3" tube, **blow-through** near TB | Stock MAF + **Diablo MAFia extension in 2.75" tube, draw-through** | Flow scaling requires exact MAFia dial setting (0–5). Draw-through meter measures pre-turbo air. |
-| **Blow-Off Valve** | Recirculated / Blow-Through compatible | **Vented to Atmosphere (VTA)** | **PRIMARY CAUSE OF DRIVEABILITY STUMBLE:** Metered air vents to atmosphere on throttle lift. The PCM fuels for air that escaped, causing rich bogging, plug fouling, and deceleration stall. |
+| **Blow-Off Valve** | Recirculated / Blow-Through compatible | **Vented to Atmosphere (VTA)** | The valve can vent metered air on throttle lift and produce a rich transient. Check the valve and capture wideband lambda through the RPM dip to assess its role. |
 | **Injectors** | Siemens Deka 60 lb/hr | Siemens Deka 60 lb/hr | Same hardware; requires identical authentic 60lb slopes and battery offset deadtimes, but **with active returnless pressure compensation**. |
 
 ---

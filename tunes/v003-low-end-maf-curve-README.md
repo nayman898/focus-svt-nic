@@ -120,8 +120,8 @@ Simulated against all clean Closed Loop bins in `Datalog-v005.hpl` (`t >= 98 s`;
    3. Confirm **18 channels** load (including `Engine RPM 2135`, `Timing Advance 2500`, `STFT Bank 1 6304`, `Fuel Pressure 6502 (psi)`, `Fuel Pump Commanded DC 6506`, `Idle Adapt STIT 2240`, and `IAC DC 2082`) and save the Scanner config.
 3. **AEM Wideband & Physical Leak Cross-Check at Warm Idle (`170–180 °F`):**
    - Watch what the cockpit **AEM wideband** reads once `STFT Bank 1` settles near `0%` (`±5%`):
-     - **`~14.5–14.9 AFR`:** Confirms clean airflow metering with no active exhaust leak skewing the O2 sensor — cleared for Stage B off-idle holds.
-     - **`< 13.5 AFR`** while `O2 B1S1` switches around stoich: Proves a remaining **pre-O2 exhaust leak** pulling fresh air into the narrowband and biasing trims rich.
+     - **`~14.5–14.9 AFR`:** Consistent with stoichiometric warm idle. Check the remaining Stage A conditions before off-idle holds.
+     - **`< 13.5 AFR`** while `O2 B1S1` switches around stoich: Check for a pre-O2 exhaust leak and verify the AEM reading and sensor locations before correcting airflow or fuel.
    - Also check the **VTA blow-off valve** and intake/vacuum hoses for any small leak under `~19 inHg` idle vacuum before driving.
 4. **Two-Stage Parked Log (`0 psi` boost — save as `logs/Datalog-v006.hpl`):**
    - **Stage A (Idle):** Cold-to-warm stationary idle to `>= 170–180 °F`. Confirm `STFT Bank 1` within **`±6%`**, `Fuel Source = Stoich` (Closed Loop active), `Fuel Pressure` (`6502`) `~38–42 psi`, `FPDM Cmd DC` `~24–28%`, `Open Loop FMEM = No`, and all 18 channels populated.
