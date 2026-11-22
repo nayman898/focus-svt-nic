@@ -63,6 +63,19 @@
       "parameter_changes": [
         "ECM 12163 (MAF Airflow vs. Voltage: smooth convex +15% idle/warmup bump; 0.90V 4.63->5.32, 1.00V 5.90->6.79, 1.10V 7.38->8.49, 1.20V 9.10->10.46, tapering via 1.60V +10%, 2.00V +4%, untouched 0% across 2.40-4.80 V)"
       ]
+    },
+    {
+      "revision": "v003",
+      "filename": "v003-low-end-maf-curve.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v002-idle-maf-bump.hpt",
+      "rollback": "v002-idle-maf-bump.hpt",
+      "status": "Pending manual VCM Editor build by Nic using tunes/v003-low-end-maf-curve-README.md",
+      "summary": "Reshapes ECM 12163 low-end MAFia Position 2 curve (0.38-1.10 V strictly convex; 1.20-4.80 V untouched) following Datalog-v0004.hpl and Datalog-v005.hpl (761.5 s log: ~700 s continuous Closed Loop, STIT relaxed to +0.036 lb/min, warm idle at 0.678 V pulling +21.1% trim tapering to +2.7% at 1.044 V).",
+      "parameter_changes": [
+        "ECM 12163 (MAF Airflow vs. Voltage: strictly convex 0.38-1.10 V reshape anchored to v005 Closed Loop trims; 0.65V 2.61->3.22, 0.70V 3.07->3.69, 0.90V 5.32->5.75, 1.00V 6.79->7.05, 1.10V 8.49->8.60; 1.20-4.80 V unchanged)"
+      ]
     }
   ],
   "reference_files": [
