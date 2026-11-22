@@ -11,7 +11,12 @@
 
 ## Tune Build Sheets
 
-- **[`tunes/v005-dashpot-decay-README.md`](tunes/v005-dashpot-decay-README.md)** — Preferred trial for the second RPM dip in `Datalog-v007.hpl`. Two low-airflow decay cells in `ECM 32984`, a calibration audit, and a focused parked-test profile.
+Nic reports that idle AFR briefly improved after returning to **`v003`** on November 22, then jumped lean again. The `v012` log is the reference for the next parked fuel trial.
+
+For the parked `v006` test, mark the AEM reading at closed-loop entry. The focused profile requests upstream O₂, Bank 1 trim, commanded ratio, loop state, and raw rail pressure. Check which channels populate before interpreting the event. [Closed-loop entry Scanner profile](profiles/Focus_SVT_Closed_Loop_Entry.Channels.xml)
+
+- **[`tunes/v006-idle-fuel-README.md`](tunes/v006-idle-fuel-README.md)** — Parked fuel trial from `v003` with about 12% more modeled airflow in the logged 0.70–0.90 V idle range.
+- **[`tunes/v005-dashpot-decay-README.md`](tunes/v005-dashpot-decay-README.md)** — Dashpot decay trial on hold while the recurring idle AFR reading is investigated.
 - **[`tunes/v004-dashpot-catch-README.md`](tunes/v004-dashpot-catch-README.md)** — Separate pre-position trial from `v003`, with one edit at 3,150 RPM in `ECM 32988`.
 
 - **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).

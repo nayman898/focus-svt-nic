@@ -1,6 +1,8 @@
 # v005 Low-Airflow Dashpot Decay
 
-Build `v005-dashpot-decay.hpt` from Nic’s `v003-low-end-maf-curve.hpt`. Use the exact `v003` file as rollback. This is the first trial for the **second** RPM dip in `Datalog-v007.hpl`. If Nic has already built or tested `v004`, keep that file and any log as a separate pre-position trial. The `v005` build and vehicle test are pending.
+**On hold as of November 22, 2026.** Nic reports that idle AFR briefly improved after returning to `v003`, then jumped lean again. A capture of the transition on `v003` and the exact prior flashed filename are pending. Compare Nic’s saved files in VCM Editor before attributing any AFR difference to a specific edit.
+
+The `v005` build sheet tests low-airflow decay after the **second** RPM dip in `Datalog-v007.hpl`. Its intended parent and rollback are the exact `v003-low-end-maf-curve.hpt` file. `v004` is a separate pre-position trial.
 
 ## Edit in VCM Editor
 

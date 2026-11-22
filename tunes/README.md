@@ -3,7 +3,8 @@
 All tune binaries (`.hpt`) and calibration documentation live here.
 
 ### Revision Guides
-- **Preferred Trial (`v005`):** [Low-Airflow Dashpot Decay Build Sheet](v005-dashpot-decay-README.md). Test the second RPM dip by slowing low-airflow decay in `ECM 32984` from `v003`.
+- **Parked Fuel Trial (`v006`):** [Idle Fuel Build Sheet](v006-idle-fuel-README.md). About 12% more modeled airflow at 0.70–0.90 V, built from `v003` with `v003` as rollback.
+- **Trial on Hold (`v005`):** [Low-Airflow Dashpot Decay Build Sheet](v005-dashpot-decay-README.md). Idle AFR briefly improved on `v003` before the lean reading recurred. The `v012` capture gives the Scanner reference for the parked fuel trial.
 - **Pre-Position Trial (`v004`):** [Dashpot Catch Build Sheet](v004-dashpot-catch-README.md). Test a single `ECM 32988` adjustment from `v003`.
 - **Fresh `v000` README Doc:** **[`v000-initial-start-README.md`](v000-initial-start-README.md)**
 - **MAFia Position `2` Base (`v001`):** **[`v001-mafia-pos2-README.md`](v001-mafia-pos2-README.md)** — `ECM 12163` 30-point Position `2` MAF curve (`lb/h` & `lb/min` tables) and 20-channel VCM Scanner XML import steps.

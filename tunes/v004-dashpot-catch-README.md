@@ -2,7 +2,7 @@
 
 Build from Nic's `v003-low-end-maf-curve.hpt` and save as `v004-dashpot-catch.hpt`. Keep that exact `v003` file for rollback. The `v004` build and test are pending. The `v003` assignment comes from the reported tune for this capture and the MAF voltage/airflow match.
 
-The calibration audit identified low-flow decay as the preferred first trial for the dip that followed the initial catch. Both build sheets use `v003` as the parent. [v005 low-airflow dashpot decay](v005-dashpot-decay-README.md)
+The audit also produced a separate low-flow decay trial, now on hold after the return to `v003`. Both build sheets use `v003` as the parent. [v005 low-airflow dashpot decay](v005-dashpot-decay-README.md)
 
 ## Edit in VCM Editor
 

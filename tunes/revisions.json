@@ -71,7 +71,7 @@
       "bytes": null,
       "parent": "v002-idle-maf-bump.hpt",
       "rollback": "v002-idle-maf-bump.hpt",
-      "status": "Pending manual VCM Editor build by Nic using tunes/v003-low-end-maf-curve-README.md",
+      "status": "Owner-reported current calibration after the November 22 rollback. Idle AFR briefly improved before the lean reading recurred. Datalog-v012 reviewed as the post-rollback comparison, without a synchronized wideband value or saved-file verification.",
       "summary": "Reshapes ECM 12163 low-end MAFia Position 2 curve (0.38-1.10 V strictly convex; 1.20-4.80 V untouched) following Datalog-v0004.hpl and Datalog-v005.hpl (761.5 s log: ~700 s continuous Closed Loop, STIT relaxed to +0.036 lb/min, warm idle at 0.678 V pulling +21.1% trim tapering to +2.7% at 1.044 V).",
       "parameter_changes": [
         "ECM 12163 (MAF Airflow vs. Voltage: strictly convex 0.38-1.10 V reshape anchored to v005 Closed Loop trims; 0.65V 2.61->3.22, 0.70V 3.07->3.69, 0.90V 5.32->5.75, 1.00V 6.79->7.05, 1.10V 8.49->8.60; 1.20-4.80 V unchanged)"
@@ -97,10 +97,23 @@
       "bytes": null,
       "parent": "v003-low-end-maf-curve.hpt",
       "rollback": "v003-low-end-maf-curve.hpt",
-      "status": "Preferred trial for the second RPM dip. Build sheet prepared. Pending VCM Editor comparison and stationary validation.",
+      "status": "Trial on hold while the recurring lean idle AFR reading is investigated. Lean reading recurred on v003 after rollback. Prior installed file and exact calibration differences remain unverified.",
       "summary": "Tests a slower low-airflow dashpot decay during the idle handoff after the initial catch in Datalog-v007.hpl.",
       "parameter_changes": [
         "ECM 32984 (Idle Dashpot Decay vs. Dashpot Airflow: 0.20 lb/min breakpoint, 0.03 -> 0.02; 0.40 lb/min breakpoint, 0.04 -> 0.03)"
+      ]
+    },
+    {
+      "revision": "v006",
+      "filename": "v006-idle-fuel.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v003-low-end-maf-curve.hpt",
+      "rollback": "v003-low-end-maf-curve.hpt",
+      "status": "Manual build sheet prepared. Pending VCM Editor comparison and parked closed-loop idle test.",
+      "summary": "Tests a roughly 12 percent low-flow MAF increase from 0.70-0.90 V in response to the assumed lean idle condition. Datalog-v012 defines the voltage band.",
+      "parameter_changes": [
+        "ECM 12163 MAF Airflow vs. Voltage (lb/h UI): 0.60 V 2.79 -> 2.99; 0.65 V 3.22 -> 3.56; 0.70 V 3.69 -> 4.13; 0.90 V 5.75 -> 6.44; 1.00 V 7.05 -> 7.61; 1.10 V 8.60 -> 8.86"
       ]
     }
   ],
