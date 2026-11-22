@@ -14,7 +14,7 @@
 - **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).
 - **[`tunes/v001-mafia-pos2-README.md`](tunes/v001-mafia-pos2-README.md)** — **`v001`: `ECM 12163` MAF curve for Diablo MAFia Position `2` + 20-channel VCM Scanner XML import** (fixes the `~2.2x` rich overfueling/FMEM lockout seen in `v000`/`v001` logs).
 - **[`tunes/v002-idle-maf-bump-README.md`](tunes/v002-idle-maf-bump-README.md)** — **Prior bump (`v002`): smooth `+15%` low-end `ECM 12163` bump (`0.70–1.20 V`, tapering to `0%` at `>= 2.40 V`)** after `v003` lean cutoff + pre-O2 exhaust leak & Scanner XML checklist.
-- **[`tunes/v003-low-end-maf-curve-README.md`](tunes/v003-low-end-maf-curve-README.md)** — **Current calibration (`v003`): strictly convex `0.38–1.10 V` `ECM 12163` reshape (`1.20–4.80 V` untouched)** calibrated from `Datalog-v005.hpl` Closed Loop trims (`+21.1%` at `0.678 V` -> `+2.7%` at `1.044 V`), plus 20-channel Scanner XML reminder and parked `1,500–2,500 RPM` test protocol.
+- **[`tunes/v003-low-end-maf-curve-README.md`](tunes/v003-low-end-maf-curve-README.md)** — **Current calibration (`v003`): strictly convex `0.38–1.10 V` `ECM 12163` reshape (`1.20–4.80 V` untouched)** calibrated from `Datalog-v005.hpl` Closed Loop trims (`+21.1%` at `0.678 V` -> `+2.7%` at `1.044 V`), plus 18-channel Scanner XML reminder and parked `1,500–2,500 RPM` test protocol.
 
 ### Modular Navigator Reference Guides
 1. **[Master Build & Navigator Guide](docs/NIC_TUNE_BUILD_README.md)** — Hardware pre-flight, VCM Editor units, Navigator workflow, Compare check & abort thresholds.
@@ -49,5 +49,5 @@
 - **[SVTv29.26 Deep Calibration Reference](docs/SVTv29.26_CALIBRATION_REFERENCE.md)** — Verified table/scalar dump of `tunes/SVTv29.26.hpt`.
 - **[First Connection Guide](docs/first-connection.md)** & **[Next Steps](docs/next-steps.md)** — Pull untouched backup, setup Scanner channels, warm idle validation.
 - **[Visual Diff Viewer (`docs/index.html`)](docs/index.html)** — Browser compare page (`SVTv29.26.hpt` vs `v000-initial-start.hpt`).
-- **[VCM Scanner Profile](profiles/Focus_SVT_Returnless_Boost.Channels.xml)** — Proven 20-channel `UJAHAS3` Black Oak layout (`2135` RPM, `2500` Timing, `6304` STFT B1, `6507` FRPS Volts, `6506` FP Cmd DC, `2300/2302` MAF, `2082` IAC, `12942/12947` CL/FMEM).
+- **[VCM Scanner Profile](profiles/Focus_SVT_Returnless_Boost.Channels.xml)** — Proven 18-channel `UJAHAS3` Black Oak layout (`2135` RPM, `2500` Timing, `6304` STFT B1, `6502` Fuel Pressure psi, `6506` FP Cmd DC, `2300/2302` MAF, `2082` IAC, `2240` STIT, `2127` IAT, `12947` FMEM).
 - **Privacy Check:** Run `python tools/verify-privacy.py --all` before committing any logs or docs.

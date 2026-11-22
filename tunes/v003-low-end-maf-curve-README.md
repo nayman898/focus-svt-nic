@@ -14,7 +14,7 @@
    - **Returnless Fuel System (ERFS) healthy:** `Datalog-v0004.hpl` logged live `Fuel Pressure` at **`38.6–41.8 psi` (median `40.00 psi`)**, and `Datalog-v005.hpl` held `Fuel Pump Commanded DC` at **`23.8–26.4%` (median `24.69%`)** — huge margin below the `45.0%` limit.
    - **Healthy Closed Loop (`Stoich`) with zero `FMEM` dropouts:** `v005` entered Closed Loop at `t = 66 s` (`88 °F`) and remained continuously in `Stoich` for **`~700 s`** straight. During warm idle (`t = 440–761.5 s`, `164–178 °F`, `DesRPM = 944 RPM`), `O2 B1S1` switched cleanly at **`0.60 Hz`** (`1.66 s/cycle`, `p10 = 0.321 V`, `p90 = 0.788 V`, `max = 0.828 V`). `TPS ADC` stayed at `168.8–169.8` counts (cleanly `< 200` in `ECM 32731`), and `ECT` settled into normal zero-load thermostat cycling at `172–178 °F` (`68 °F` ambient IAT).
    - **Cranking fix confirmed (with one brief lean first-crank stumble):** At `70 °F`, `v005` commanded `0.870`/`0.807` lambda (`ECM 44519` `64 °F` cliff fix intact), though crank #1 (`t = 7.5–12.5 s`, `MAF = 0.52–0.64 V`) stumbled/stalled before catching immediately on crank #2 (`t = 17.0 s`).
-   - **Old Scanner config still active in `v005`:** `Datalog-v005.hpl` still used the old 27-channel layout, so `Engine RPM`, `Timing Advance`, `Fuel Pressure`, and `IAC DC` dropped out and `STFT Bank 2` logged instead of `STFT Bank 1` + `FRPS Volts (6507)`.
+   - **Old Scanner config still active in `v005`:** `Datalog-v005.hpl` still used the old 27-channel layout, so `Engine RPM`, `Timing Advance`, `Fuel Pressure`, and `IAC DC` dropped out and `STFT Bank 2` logged instead of `STFT Bank 1`.
 
 2. **Why warm idle pulled `+21.1%` fuel trim (`CmdLam = 0.826`):**
    - `ECM 230` (`LTFT Enable`) is `Disabled` in the `SVTv29.26` base calibration, so Closed Loop `Equivalence Ratio Commanded - Bank 1` (`CmdLam`) equals the entire active trim (`STFT = 1 / CmdLam - 1`).
@@ -113,20 +113,20 @@ Simulated against all clean Closed Loop bins in `Datalog-v005.hpl` (`t >= 98 s`;
 ## Compare Check & Next Test Protocol (`Datalog-v006.hpl`)
 
 1. **Pre-Flash Compare Check:** Save `tunes/v003-low-end-maf-curve.hpt`, then run **`Compare -> Open Compare File... -> v002-idle-maf-bump.hpt`** -> confirm **ONLY `ECM 12163` (`0.38–1.10 V`)** changed and `1.20–4.80 V` is untouched.
-2. **Mandatory — Load the 20-Channel VCM Scanner Profile Before Connecting:**
+2. **Mandatory — Load the 18-Channel VCM Scanner Profile Before Connecting:**
    `Datalog-v005.hpl` still used the old 27-channel layout, which dropped `Engine RPM`, `Timing Advance`, `Fuel Pressure`, and `IAC DC`.
    1. Open **VCM Scanner**, right-click inside the **Channels** window -> **Open Channel Config...**.
    2. Select **`focus-svt-nic/profiles/Focus_SVT_Returnless_Boost.Channels.xml`**.
-   3. Confirm **20 channels** load (including `Engine RPM 2135`, `Timing Advance 2500`, `STFT Bank 1 6304`, `Fuel Pressure Sensor 6507`, `Fuel Pump Commanded DC 6506`, and `IAC DC 2082`) and save the Scanner config.
+   3. Confirm **18 channels** load (including `Engine RPM 2135`, `Timing Advance 2500`, `STFT Bank 1 6304`, `Fuel Pressure 6502 (psi)`, `Fuel Pump Commanded DC 6506`, `Idle Adapt STIT 2240`, and `IAC DC 2082`) and save the Scanner config.
 3. **AEM Wideband & Physical Leak Cross-Check at Warm Idle (`170–180 °F`):**
    - Watch what the cockpit **AEM wideband** reads once `STFT Bank 1` settles near `0%` (`±5%`):
      - **`~14.5–14.9 AFR`:** Confirms clean airflow metering with no active exhaust leak skewing the O2 sensor — cleared for Stage B off-idle holds.
      - **`< 13.5 AFR`** while `O2 B1S1` switches around stoich: Proves a remaining **pre-O2 exhaust leak** pulling fresh air into the narrowband and biasing trims rich.
    - Also check the **VTA blow-off valve** and intake/vacuum hoses for any small leak under `~19 inHg` idle vacuum before driving.
 4. **Two-Stage Parked Log (`0 psi` boost — save as `logs/Datalog-v006.hpl`):**
-   - **Stage A (Idle):** Cold-to-warm stationary idle to `>= 170–180 °F`. Confirm `STFT Bank 1` within **`±6%`**, `FRPS` (`6507`) `~2.7–2.9 V` (`~40 psi`), `FPDM Cmd DC` `~24–28%`, `Open Loop FMEM = No`, and all 20 channels populated.
+   - **Stage A (Idle):** Cold-to-warm stationary idle to `>= 170–180 °F`. Confirm `STFT Bank 1` within **`±6%`**, `Fuel Source = Stoich` (Closed Loop active), `Fuel Pressure` (`6502`) `~38–42 psi`, `FPDM Cmd DC` `~24–28%`, `Open Loop FMEM = No`, and all 18 channels populated.
    - **Stage B (Only if Stage A passes cleanly):** In neutral, perform 3 gentle steady holds at **`1,500`**, **`2,000`**, and **`2,500 RPM`** for **`15–20 s` each**, with **`20 s` idle returns** between them. That safely maps `1.10–1.80 V` Closed Loop trims at `0 psi` boost before any street cruising.
 5. **Hard Abort Rules:**
-   - **`FPDM Cmd DC >= 45.0%`** or **`FRPS < 2.2 V` (`< 30 psi`)** while running
+   - **`FPDM Cmd DC >= 45.0%`** or **`Fuel Pressure < 30 psi`** while running
    - **Wideband `> 16.5 AFR`** at warm idle or **`Lambda > 0.80`** under boost (`> 3 psi`)
    - **`ECT > 220 °F`**, **`Knock Retard > 1.5°–2.0°`**, or idle stall/hunting **`< 650 RPM`**
