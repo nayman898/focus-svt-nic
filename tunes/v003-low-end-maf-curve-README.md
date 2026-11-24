@@ -17,7 +17,7 @@
    - **Old Scanner config still active in `v005`:** `Datalog-v005.hpl` still used the old 27-channel layout, so `Engine RPM`, `Timing Advance`, `Fuel Pressure`, and `IAC DC` dropped out and `STFT Bank 2` logged instead of `STFT Bank 1`.
 
 2. **Why warm idle pulled `+21.1%` fuel trim (`CmdLam = 0.826`):**
-   - `ECM 230` (`LTFT Enable`) is `Disabled` in the `SVTv29.26` base calibration, so Closed Loop `Equivalence Ratio Commanded - Bank 1` (`CmdLam`) equals the entire active trim (`STFT = 1 / CmdLam - 1`).
+   - `ECM 230` (`LTFT Enable`) is `Disabled` in the `SVTv29.26` base calibration. The historical estimates below use `100 × (1 / CmdLam − 1)` as a modeled airflow correction. The later `Datalog-v015.hpl` records the displayed Bank 1 STFT as `100 × (1 − CmdLam)`. Use the logged Bank 1 STFT for direct comparisons when it populates.
    - Once idle adaptation (`STIT`) relaxed from `+0.30 lb/min` pegged (`v000`–`v002`) and `+0.128 lb/min` (`v0004`) down to **`+0.036 ± 0.021 lb/min`** in `v005`, true warm idle airflow settled around **`~0.44 lb/min`** (matching factory `ECM 44242` base idle air of `0.430 lb/min` @ `944 RPM` + `+0.036` STIT). That put warm idle down at **`0.668–0.688 V`**, where `v002` reported only `0.352–0.374 lb/min`.
    - Because `v001`/`v002` used an overly steep power-law slope below `1.10 V` (`1.00 V / 0.65 V = 2.60×` vs `~2.19×` measured), `v002` under-reported airflow monotonically as voltage dropped across clean switching Closed Loop (`t >= 98 s` in `v005`):
      - `0.668 V` (`n = 1,517`): `v002` = `2.79 lb/h` UI -> `CmdLam = 0.8229` (**`+21.5%`** trim, peaking at `0.7937` / `+26.0%` near the lean rail) -> Corrected = **`3.39 lb/h` UI**

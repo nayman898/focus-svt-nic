@@ -3,13 +3,15 @@
 All tune binaries (`.hpt`) and calibration documentation live here.
 
 ### Revision Guides
-- **Parked Fuel Trial (`v006`):** [Idle Fuel Build Sheet](v006-idle-fuel-README.md). About 12% more modeled airflow at 0.70–0.90 V, built from `v003` with `v003` as rollback.
+- **Next Parked Trial (`v007`):** [Idle Handoff Build Sheet](v007-idle-handoff-README.md). Test two low-flow dashpot decay edits from the exact `v006` file, with `v006` as rollback.
+- **Fallback Parked Trial (`v008`):** [Low-RPM Dashpot Catch Build Sheet](v008-low-rpm-dashpot-catch-README.md). Test more pre-position at 2,150 RPM from the exact `v006` file if the first idle catch still undershoots.
+- **Current Baseline (`v006`):** [Idle Fuel Build Sheet](v006-idle-fuel-README.md). Confirmed after the upstream O₂ replacement in `Datalog-v016.hpl` and `Drive-log-v001.hpl`.
 - **Trial on Hold (`v005`):** [Low-Airflow Dashpot Decay Build Sheet](v005-dashpot-decay-README.md). Idle AFR briefly improved on `v003` before the lean reading recurred. The `v012` capture gives the Scanner reference for the parked fuel trial.
 - **Pre-Position Trial (`v004`):** [Dashpot Catch Build Sheet](v004-dashpot-catch-README.md). Test a single `ECM 32988` adjustment from `v003`.
 - **Fresh `v000` README Doc:** **[`v000-initial-start-README.md`](v000-initial-start-README.md)**
 - **MAFia Position `2` Base (`v001`):** **[`v001-mafia-pos2-README.md`](v001-mafia-pos2-README.md)** — `ECM 12163` 30-point Position `2` MAF curve (`lb/h` & `lb/min` tables) and 20-channel VCM Scanner XML import steps.
 - **Low-End Bump (`v002`):** **[`v002-idle-maf-bump-README.md`](v002-idle-maf-bump-README.md)** — Smooth `+15%` low-end `ECM 12163` bump (`0.70–1.20 V`, tapering to `0%` at `>= 2.40 V`) after `v003` lean cutoff + pre-O2 exhaust leak & Scanner XML checklist.
-- **Current Calibration (`v003`):** **[`v003-low-end-maf-curve-README.md`](v003-low-end-maf-curve-README.md)** — Strictly convex `0.38–1.10 V` `ECM 12163` reshape (`1.20–4.80 V` untouched) calibrated from `Datalog-v005.hpl` Closed Loop trims (`+21.1%` at `0.678 V` -> `+2.7%` at `1.044 V`), plus mandatory 18-channel XML import & parked `1,500–2,500 RPM` test protocol.
+- **`v006` Parent (`v003`):** **[`v003-low-end-maf-curve-README.md`](v003-low-end-maf-curve-README.md)** — Strictly convex `0.38–1.10 V` `ECM 12163` reshape (`1.20–4.80 V` untouched) calibrated from `Datalog-v005.hpl` Closed Loop trims (`+21.1%` at `0.678 V` -> `+2.7%` at `1.044 V`), plus mandatory 18-channel XML import & parked `1,500–2,500 RPM` test protocol.
 - **Starting Base Tune:** [`SVTv29.26.hpt`](SVTv29.26.hpt) (`212,349` bytes) — **DO NOT modify in place.**
 - **Target Output Files:** `tunes/v000-initial-start.hpt` (`File -> Save As` from `SVTv29.26.hpt`) -> `tunes/v001-mafia-pos2.hpt` -> `tunes/v002-idle-maf-bump.hpt` -> `tunes/v003-low-end-maf-curve.hpt`.
 

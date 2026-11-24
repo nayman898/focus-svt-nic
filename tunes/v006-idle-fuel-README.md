@@ -1,5 +1,9 @@
 # v006 Idle Fuel
 
+**Current post-sensor baseline.** Nic confirmed `v006` in both November 23 logs after replacing the upstream O₂. Warm parked idle settled near **950 RPM** with median Bank 1 STFT of **+0.78%** and logged AEM AFR of **16.14**. The drive had three dips below **650 RPM**. Keep this exact file as the parent and rollback for the [v007 idle handoff trial](v007-idle-handoff-README.md).
+
+**Earlier parked trial with the old sensor.** Nic reported **21 AFR** on the AEM during `Datalog-v014.hpl`. The repeat run `Datalog-v015.hpl` still read very lean and showed Bank 1 STFT reach **−12.72%** before the RPM undershoot, with steady estimated rail pressure. Both recordings end before the warm-idle comparison. The rollback for that fuel trial was the exact `v003` parent.
+
 Build `v006-idle-fuel.hpt` from Nic’s actual `v003-low-end-maf-curve.hpt`. Keep that exact `v003` file for rollback. This parked trial assumes that the reported high AEM AFR during closed loop is a real lean mixture and tests a low-flow MAF correction.
 
 ## Edit in VCM Editor
@@ -29,4 +33,4 @@ The gain interpolates from zero at **0.54 V**, peaks near **12%** in the warm-id
 2. Compare the AFR trend through closed-loop entry and at **170–178 °F** to the `v003` baseline. Look for sustained movement toward stoichiometric AFR, stable idle, and rail pressure around **40 psi**. Check for rich startup or a new stumble as well.
 3. Keep this test parked with the throttle closed. If warm AFR again stays above **16.5** on the gasoline scale, or the engine runs poorly or hits a repository stop condition, end the test and save the recording. Use `v003` as rollback if `v006` worsens operation or the measured idle mixture shows no improvement. [Repository limits](../AGENTS.md)
 
-Baseline input `Datalog-v012.hpl`, SHA-256 `1541AEA05057C26020E9449FCA74B17F7D945E40CFB84E6CEBCA0E7181C1A858`. The parked result still needs a saved candidate and a vehicle test.
+Baseline input for the original fuel trial was `Datalog-v012.hpl`, SHA-256 `1541AEA05057C26020E9449FCA74B17F7D945E40CFB84E6CEBCA0E7181C1A858`.

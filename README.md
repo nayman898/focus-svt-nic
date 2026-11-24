@@ -11,18 +11,20 @@
 
 ## Tune Build Sheets
 
-Nic reports that idle AFR briefly improved after returning to **`v003`** on November 22, then jumped lean again. The `v012` log is the reference for the next parked fuel trial.
+Nic confirmed **`v006`** for the November 23 logs after the upstream O₂ replacement. Warm parked idle held near 950 RPM. The first light-throttle drive had three closed-throttle dips below 650 RPM. Build **`v007`** from that exact `v006` for a parked dashpot-decay test, with the same `v006` file as rollback.
 
-For the parked `v006` test, mark the AEM reading at closed-loop entry. The focused profile requests upstream O₂, Bank 1 trim, commanded ratio, loop state, and raw rail pressure. Check which channels populate before interpreting the event. [Closed-loop entry Scanner profile](profiles/Focus_SVT_Closed_Loop_Entry.Channels.xml)
+For the next parked capture, log key-on through warm idle and mark the AEM comparison and throttle releases. [Diagnostic plan](docs/2026-11-23-idle-diagnostic-plan.md) · [Idle diagnostic Scanner profile](profiles/Focus_SVT_Idle_Diagnostic.Channels.xml)
 
-- **[`tunes/v006-idle-fuel-README.md`](tunes/v006-idle-fuel-README.md)** — Parked fuel trial from `v003` with about 12% more modeled airflow in the logged 0.70–0.90 V idle range.
+- **[`tunes/v007-idle-handoff-README.md`](tunes/v007-idle-handoff-README.md)** — Next parked trial with two low-flow decay edits in ECM 32984.
+- **[`tunes/v008-low-rpm-dashpot-catch-README.md`](tunes/v008-low-rpm-dashpot-catch-README.md)** — Separate parked trial from `v006` if the first catch still undershoots, with one pre-position edit in ECM 32988.
+- **[`tunes/v006-idle-fuel-README.md`](tunes/v006-idle-fuel-README.md)** — Current post-sensor baseline with about 12% more modeled airflow in the 0.70–0.90 V idle range than `v003`.
 - **[`tunes/v005-dashpot-decay-README.md`](tunes/v005-dashpot-decay-README.md)** — Dashpot decay trial on hold while the recurring idle AFR reading is investigated.
 - **[`tunes/v004-dashpot-catch-README.md`](tunes/v004-dashpot-catch-README.md)** — Separate pre-position trial from `v003`, with one edit at 3,150 RPM in `ECM 32988`.
 
 - **[`tunes/v000-initial-start-README.md`](tunes/v000-initial-start-README.md)** — **Everything in one doc to build `v000-initial-start.hpt` and get the car started safely** (`ECM` numbers, exact current vs target values, copy-paste VCT matrix, verify-only table, Compare self-check, first-crank warmup log & abort rules).
 - **[`tunes/v001-mafia-pos2-README.md`](tunes/v001-mafia-pos2-README.md)** — **`v001`: `ECM 12163` MAF curve for Diablo MAFia Position `2` + 20-channel VCM Scanner XML import** (fixes the `~2.2x` rich overfueling/FMEM lockout seen in `v000`/`v001` logs).
 - **[`tunes/v002-idle-maf-bump-README.md`](tunes/v002-idle-maf-bump-README.md)** — **Prior bump (`v002`): smooth `+15%` low-end `ECM 12163` bump (`0.70–1.20 V`, tapering to `0%` at `>= 2.40 V`)** after `v003` lean cutoff + pre-O2 exhaust leak & Scanner XML checklist.
-- **[`tunes/v003-low-end-maf-curve-README.md`](tunes/v003-low-end-maf-curve-README.md)** — **Current calibration (`v003`): strictly convex `0.38–1.10 V` `ECM 12163` reshape (`1.20–4.80 V` untouched)** calibrated from `Datalog-v005.hpl` Closed Loop trims (`+21.1%` at `0.678 V` -> `+2.7%` at `1.044 V`), plus 18-channel Scanner XML reminder and parked `1,500–2,500 RPM` test protocol.
+- **[`tunes/v003-low-end-maf-curve-README.md`](tunes/v003-low-end-maf-curve-README.md)** — **`v006` parent:** strictly convex `0.38–1.10 V` `ECM 12163` reshape (`1.20–4.80 V` untouched) calibrated from `Datalog-v005.hpl` Closed Loop trims (`+21.1%` at `0.678 V` -> `+2.7%` at `1.044 V`), plus 18-channel Scanner XML reminder and parked `1,500–2,500 RPM` test protocol.
 
 ### Modular Navigator Reference Guides
 1. **[Master Build & Navigator Guide](docs/NIC_TUNE_BUILD_README.md)** — Hardware pre-flight, VCM Editor units, Navigator workflow, Compare check & abort thresholds.

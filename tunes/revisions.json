@@ -71,7 +71,7 @@
       "bytes": null,
       "parent": "v002-idle-maf-bump.hpt",
       "rollback": "v002-idle-maf-bump.hpt",
-      "status": "Owner-reported current calibration after the November 22 rollback. Idle AFR briefly improved before the lean reading recurred. Datalog-v012 reviewed as the post-rollback comparison, without a synchronized wideband value or saved-file verification.",
+      "status": "November 22 rollback and parent of v006. Idle AFR briefly improved before the lean reading recurred. Datalog-v012 is the post-rollback comparison.",
       "summary": "Reshapes ECM 12163 low-end MAFia Position 2 curve (0.38-1.10 V strictly convex; 1.20-4.80 V untouched) following Datalog-v0004.hpl and Datalog-v005.hpl (761.5 s log: ~700 s continuous Closed Loop, STIT relaxed to +0.036 lb/min, warm idle at 0.678 V pulling +21.1% trim tapering to +2.7% at 1.044 V).",
       "parameter_changes": [
         "ECM 12163 (MAF Airflow vs. Voltage: strictly convex 0.38-1.10 V reshape anchored to v005 Closed Loop trims; 0.65V 2.61->3.22, 0.70V 3.07->3.69, 0.90V 5.32->5.75, 1.00V 6.79->7.05, 1.10V 8.49->8.60; 1.20-4.80 V unchanged)"
@@ -110,10 +110,36 @@
       "bytes": null,
       "parent": "v003-low-end-maf-curve.hpt",
       "rollback": "v003-low-end-maf-curve.hpt",
-      "status": "Manual build sheet prepared. Pending VCM Editor comparison and parked closed-loop idle test.",
+      "status": "Owner-confirmed November 23 baseline after upstream O2 replacement in Datalog-v016 and Drive-log-v001. Warm parked idle tracks target; three drive dips below 650 RPM. The earlier v014 and v015 parked trials with the old upstream sensor failed. Exact saved HPT identity still pending.",
       "summary": "Tests a roughly 12 percent low-flow MAF increase from 0.70-0.90 V in response to the assumed lean idle condition. Datalog-v012 defines the voltage band.",
       "parameter_changes": [
         "ECM 12163 MAF Airflow vs. Voltage (lb/h UI): 0.60 V 2.79 -> 2.99; 0.65 V 3.22 -> 3.56; 0.70 V 3.69 -> 4.13; 0.90 V 5.75 -> 6.44; 1.00 V 7.05 -> 7.61; 1.10 V 8.60 -> 8.86"
+      ]
+    },
+    {
+      "revision": "v007",
+      "filename": "v007-idle-handoff.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v006-idle-fuel.hpt",
+      "rollback": "v006-idle-fuel.hpt",
+      "status": "Build sheet prepared in tunes/v007-idle-handoff-README.md. Pending manual VCM Editor build, whole-file comparison and parked validation.",
+      "summary": "Tests slower low-airflow dashpot decay after three throttle-closed undershoots to 551, 525 and 482 RPM on the post-O2-replacement v006 drive.",
+      "parameter_changes": [
+        "ECM 32984 (Idle Dashpot Decay vs. Dashpot Airflow: 0.20 lb/min breakpoint, 0.03 -> 0.02; 0.40 lb/min breakpoint, 0.04 -> 0.03)"
+      ]
+    },
+    {
+      "revision": "v008",
+      "filename": "v008-low-rpm-dashpot-catch.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": "v006-idle-fuel.hpt",
+      "rollback": "v006-idle-fuel.hpt",
+      "status": "Build sheet prepared in tunes/v008-low-rpm-dashpot-catch-README.md. Parked comparison candidate if v007 leaves an undershoot on the initial catch. Pending manual VCM Editor build and validation.",
+      "summary": "Tests more dashpot pre-position at the RPM of throttle closure before the three Drive-log-v001 near-stalls.",
+      "parameter_changes": [
+        "ECM 32988 (Idle Dashpot Pre-Position vs. RPM: 2,150 RPM, 0.55 -> 0.68 lb/min)"
       ]
     }
   ],
