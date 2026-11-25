@@ -110,7 +110,7 @@
       "bytes": null,
       "parent": "v003-low-end-maf-curve.hpt",
       "rollback": "v003-low-end-maf-curve.hpt",
-      "status": "Owner-confirmed November 23 baseline after upstream O2 replacement in Datalog-v016 and Drive-log-v001. Warm parked idle tracks target; three drive dips below 650 RPM. The earlier v014 and v015 parked trials with the old upstream sensor failed. Exact saved HPT identity still pending.",
+      "status": "Owner-confirmed post-upstream-O2 baseline in Datalog-v016, Drive-log-v001 and Datalog-v018. Warm parked idle tracks target. Three November 23 drive dips fell below 650 RPM. Three November 25 neutral sweeps fell below 800 RPM, with a 286 RPM minimum on the second. Exact saved HPT identity still pending.",
       "summary": "Tests a roughly 12 percent low-flow MAF increase from 0.70-0.90 V in response to the assumed lean idle condition. Datalog-v012 defines the voltage band.",
       "parameter_changes": [
         "ECM 12163 MAF Airflow vs. Voltage (lb/h UI): 0.60 V 2.79 -> 2.99; 0.65 V 3.22 -> 3.56; 0.70 V 3.69 -> 4.13; 0.90 V 5.75 -> 6.44; 1.00 V 7.05 -> 7.61; 1.10 V 8.60 -> 8.86"
@@ -140,6 +140,20 @@
       "summary": "Tests more dashpot pre-position at the RPM of throttle closure before the three Drive-log-v001 near-stalls.",
       "parameter_changes": [
         "ECM 32988 (Idle Dashpot Pre-Position vs. RPM: 2,150 RPM, 0.55 -> 0.68 lb/min)"
+      ]
+    },
+    {
+      "revision": "v009",
+      "filename": "v009-return-to-idle.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": null,
+      "rollback": null,
+      "status": "Build sheet prepared; unbuilt and unvalidated. Parent/rollback: exact combined v007 + v008 used for v019; filename/hash pending.",
+      "summary": "Earlier and longer dashpot airflow support through return to idle; replaces withdrawn, unbuilt idle-target proposal. Idle targets remain at parent values.",
+      "parameter_changes": [
+        "ECM 32988 at 1150/2150/3150 RPM: 0.35/0.68/0.80 -> 0.45/0.80/1.00 lb/min",
+        "ECM 32984 at 0.00/0.20/0.40/0.60 lb/min: 0.02/0.02/0.03/0.05 -> 0.01/0.01/0.02/0.04"
       ]
     }
   ],

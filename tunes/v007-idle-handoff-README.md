@@ -26,6 +26,8 @@ On the first drive after the upstream O₂ replacement, the three severe dips oc
 
 The parked log on the same calibration held a median **950 RPM** at a **944 RPM** target after warmup. The AEM showed **16.14 AFR** at that idle while B1S1 switched and median Bank 1 STFT was **+0.78%**. The AEM signal and actual mixture still need a cross-check. The two decay edits isolate the RPM recovery question. [Datalog-v016.hpl](../logs/Datalog-v016.hpl)
 
+On November 25, `v006` dipped to **783, 286, and 730 RPM** in three parked neutral sweeps. The middle sweep first caught near target, then collapsed while IAC rose to **100%**. Verify the valve and bypass passage before testing this candidate. Start with the shorter, lower-RPM holds below. [Datalog-v018.hpl](../logs/Datalog-v018.hpl)
+
 ## Parked comparison
 
 Use the [next-log diagnostic plan](../docs/2026-11-23-idle-diagnostic-plan.md) and [Scanner profile](../profiles/Focus_SVT_Idle_Diagnostic.Channels.xml) for the matched captures.

@@ -11,11 +11,13 @@
 
 ## Tune Build Sheets
 
-Nic confirmed **`v006`** for the November 23 logs after the upstream O₂ replacement. Warm parked idle held near 950 RPM. The first light-throttle drive had three closed-throttle dips below 650 RPM. Build **`v007`** from that exact `v006` for a parked dashpot-decay test, with the same `v006` file as rollback.
+The next requested calibration trial is [v009 return-to-idle airflow](tunes/v009-return-to-idle-README.md), built from the combined v007 + v008 file used for Datalog-v019.
+
+Nic confirmed **`v006`** for the November 23 logs after the upstream O₂ replacement. Warm parked idle held near 950 RPM. The first light-throttle drive had three closed-throttle dips below 650 RPM. Nic subsequently confirmed the combined `v007` + `v008` edits for `Datalog-v019`; recovery remains unstable. Use that combined file as the parent and rollback for `v009`.
 
 For the next parked capture, log key-on through warm idle and mark the AEM comparison and throttle releases. [Diagnostic plan](docs/2026-11-23-idle-diagnostic-plan.md) · [Idle diagnostic Scanner profile](profiles/Focus_SVT_Idle_Diagnostic.Channels.xml)
 
-- **[`tunes/v007-idle-handoff-README.md`](tunes/v007-idle-handoff-README.md)** — Next parked trial with two low-flow decay edits in ECM 32984.
+- **[`tunes/v007-idle-handoff-README.md`](tunes/v007-idle-handoff-README.md)** — Earlier recipe with two low-flow decay edits in ECM 32984.
 - **[`tunes/v008-low-rpm-dashpot-catch-README.md`](tunes/v008-low-rpm-dashpot-catch-README.md)** — Separate parked trial from `v006` if the first catch still undershoots, with one pre-position edit in ECM 32988.
 - **[`tunes/v006-idle-fuel-README.md`](tunes/v006-idle-fuel-README.md)** — Current post-sensor baseline with about 12% more modeled airflow in the 0.70–0.90 V idle range than `v003`.
 - **[`tunes/v005-dashpot-decay-README.md`](tunes/v005-dashpot-decay-README.md)** — Dashpot decay trial on hold while the recurring idle AFR reading is investigated.

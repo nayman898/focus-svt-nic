@@ -3,8 +3,10 @@
 All tune binaries (`.hpt`) and calibration documentation live here.
 
 ### Revision Guides
-- **Next Parked Trial (`v007`):** [Idle Handoff Build Sheet](v007-idle-handoff-README.md). Test two low-flow dashpot decay edits from the exact `v006` file, with `v006` as rollback.
-- **Fallback Parked Trial (`v008`):** [Low-RPM Dashpot Catch Build Sheet](v008-low-rpm-dashpot-catch-README.md). Test more pre-position at 2,150 RPM from the exact `v006` file if the first idle catch still undershoots.
+
+- **Next Parked Trial (`v009`):** [Return-to-Idle Airflow Build Sheet](v009-return-to-idle-README.md). Add earlier and longer dashpot airflow support from the exact combined v007 + v008 file used for Datalog-v019; includes a staged path to a controlled moving test.
+- **Earlier Decay Recipe (`v007`):** [Idle Handoff Build Sheet](v007-idle-handoff-README.md). Test two low-flow dashpot decay edits from the exact `v006` file, with `v006` as rollback.
+- **Earlier Pre-Position Recipe (`v008`):** [Low-RPM Dashpot Catch Build Sheet](v008-low-rpm-dashpot-catch-README.md). Test more pre-position at 2,150 RPM from the exact `v006` file if the first idle catch still undershoots.
 - **Current Baseline (`v006`):** [Idle Fuel Build Sheet](v006-idle-fuel-README.md). Confirmed after the upstream O₂ replacement in `Datalog-v016.hpl` and `Drive-log-v001.hpl`.
 - **Trial on Hold (`v005`):** [Low-Airflow Dashpot Decay Build Sheet](v005-dashpot-decay-README.md). Idle AFR briefly improved on `v003` before the lean reading recurred. The `v012` capture gives the Scanner reference for the parked fuel trial.
 - **Pre-Position Trial (`v004`):** [Dashpot Catch Build Sheet](v004-dashpot-catch-README.md). Test a single `ECM 32988` adjustment from `v003`.
