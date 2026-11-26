@@ -4,7 +4,9 @@ All tune binaries (`.hpt`) and calibration documentation live here.
 
 ### Revision Guides
 
-- **Next Parked Trial (`v009`):** [Return-to-Idle Airflow Build Sheet](v009-return-to-idle-README.md). Add earlier and longer dashpot airflow support from the exact combined v007 + v008 file used for Datalog-v019; includes a staged path to a controlled moving test.
+- **Next Trial (`v010`):** [Recovery Build Sheet](v010-recovery-README.md). Unclips low-speed dashpot (`ECM 32945`), raises idle spark floor (`ECM 44582`), sets `1,050 RPM` idle (`ECM 44218/44217`), and raises DFCO exit (`ECM 2291`) on `v009`.
+
+- **Latest Assumed Logged Recipe (`v009`):** [Return-to-Idle Airflow Build Sheet](v009-return-to-idle-README.md). Add earlier and longer dashpot airflow support from the exact combined v007 + v008 file used for Datalog-v019; includes a staged path to a controlled moving test.
 - **Earlier Decay Recipe (`v007`):** [Idle Handoff Build Sheet](v007-idle-handoff-README.md). Test two low-flow dashpot decay edits from the exact `v006` file, with `v006` as rollback.
 - **Earlier Pre-Position Recipe (`v008`):** [Low-RPM Dashpot Catch Build Sheet](v008-low-rpm-dashpot-catch-README.md). Test more pre-position at 2,150 RPM from the exact `v006` file if the first idle catch still undershoots.
 - **Current Baseline (`v006`):** [Idle Fuel Build Sheet](v006-idle-fuel-README.md). Confirmed after the upstream O₂ replacement in `Datalog-v016.hpl` and `Drive-log-v001.hpl`.

@@ -11,7 +11,7 @@
 
 ## Tune Build Sheets
 
-The next requested calibration trial is [v009 return-to-idle airflow](tunes/v009-return-to-idle-README.md), built from the combined v007 + v008 file used for Datalog-v019.
+The latest review is [Datalog-v020](docs/2026-11-25-v020-review.md), assumed on `v009`. The next ready-to-build trial is [v010 recovery](tunes/v010-recovery-README.md) (`ECM 32945` dashpot clip, `ECM 44582` spark floor, `1,050 RPM` idle, and `ECM 2291` DFCO exit), with `LTFT` / `Injector PW` / `EVAP Purge` logging required.
 
 Nic confirmed **`v006`** for the November 23 logs after the upstream O₂ replacement. Warm parked idle held near 950 RPM. The first light-throttle drive had three closed-throttle dips below 650 RPM. Nic subsequently confirmed the combined `v007` + `v008` edits for `Datalog-v019`; recovery remains unstable. Use that combined file as the parent and rollback for `v009`.
 

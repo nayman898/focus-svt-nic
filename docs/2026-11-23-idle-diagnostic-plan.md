@@ -1,5 +1,7 @@
 # Nic’s next diagnostic log
 
+**Latest update:** [v020 review](2026-11-25-v020-review.md) supersedes the next-trial instructions below. [v010](../tunes/v010-recovery-README.md) is now a ready-to-build 4-edit return-to-idle recovery trial on `v009` (`ECM 32945`, `ECM 44582`, `ECM 44218/44217`, `ECM 2291`), with `Bank 1 LTFT`, `Injector Pulse Width`, and `EVAP Purge` logging required to resolve the post-restart trim shift.
+
 The next requested tune trial is [v009](../tunes/v009-return-to-idle-README.md), adding earlier and longer dashpot airflow support from the combined file used in v019. Its build sheet replaces the idle-target-only proposal and defines the next parked checks and progression to a controlled moving test. The repair steps below address the rich transient and possible IAC response limits seen in that baseline.
 
 **November 25 repair plan.** `Datalog-v019` ran with both dashpot edits. All three sweeps showed a rich excursion after the initial catch, and the first ended in a stall with 100% IAC command. For a hardware-only repair, use the installed calibration for the first post-repair check. If building the requested v009 trial, use its build sheet and record any hardware work alongside the tune revision. [Datalog-v019](../logs/Datalog-v019.hpl)

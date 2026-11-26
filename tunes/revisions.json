@@ -155,6 +155,22 @@
         "ECM 32988 at 1150/2150/3150 RPM: 0.35/0.68/0.80 -> 0.45/0.80/1.00 lb/min",
         "ECM 32984 at 0.00/0.20/0.40/0.60 lb/min: 0.02/0.02/0.03/0.05 -> 0.01/0.01/0.02/0.04"
       ]
+    },
+    {
+      "revision": "v010",
+      "filename": "v010-recovery.hpt",
+      "sha256": null,
+      "bytes": null,
+      "parent": null,
+      "rollback": null,
+      "status": "Build sheet ready; unbuilt and unvalidated. Parent/rollback: exact v009 file used for Datalog-v020; filename/hash pending.",
+      "summary": "VTA-BOV return-to-idle recovery trial on v009: unclips low-speed dashpot, raises idle spark floor, raises idle target to 1,050 RPM, and raises DFCO exit RPM.",
+      "parameter_changes": [
+        "ECM 32945 (Idle Dashpot Max Clip vs. VSS at 0/10/15 mph): 0.10 -> 0.25 lb/min",
+        "ECM 44582 (Spark Idle Control Minimum): -6.00 -> +4.00 deg",
+        "ECM 44218 / 44217 (Target Idle Speed P/N & Drive): 950 -> 1,050 RPM",
+        "ECM 2291 (Maximum RPM to Disable DFCO): 750 -> 1,100 RPM"
+      ]
     }
   ],
   "reference_files": [
